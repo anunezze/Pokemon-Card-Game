@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DbRegistry {
 	
 	private Connection connection;
-	private String database = "pokemonDb";
+	private String database = "pokemon_db";
 	private String user ="root";
 	private String password ="a;sldkfj";
 	

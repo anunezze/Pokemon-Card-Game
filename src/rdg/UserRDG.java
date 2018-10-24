@@ -1,6 +1,10 @@
 package rdg;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import database.DbRegistry;
 
 public class UserRDG {
 	
@@ -41,6 +45,13 @@ public class UserRDG {
 	}
 	
 	public void insert() throws SQLException{
-		throw new SQLException();
+		Connection connection = new DbRegistry().getConnection();
+		String query = "INSERT INTO user (username,password) VALUES (?,?);";
+		PreparedStatement ps = connection.prepareStatement(query);
+		ps.setString(1, this.username);
+		ps.setString(2, this.password);
+		ps.executeUpdate();
+		ps.close();
+		connection.close();
 	}
 }
