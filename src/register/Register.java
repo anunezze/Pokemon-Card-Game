@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import rdg.UserRDG;
+import util.HashUtil;
 
 /**
  * Servlet implementation class Register
@@ -39,7 +40,7 @@ public class Register extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		UserRDG newUser = new UserRDG(0, username, password);
+		UserRDG newUser = new UserRDG(0, username, HashUtil.hash(password));
 		try {
 			newUser.insert();
 		} catch (SQLException e) {
