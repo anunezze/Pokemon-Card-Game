@@ -1,4 +1,4 @@
-package register;
+package PageControllers;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -10,43 +10,50 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import rdg.UserRDG;
-import util.HashUtil;
 
 /**
- * Servlet implementation class Register
+ * Servlet implementation class Logout
  */
-@WebServlet("/Register")
-public class Register extends HttpServlet {
+@WebServlet("/Logout")
+public class LogoutPC extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Register() {
+    public LogoutPC() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		getServletContext().getRequestDispatcher("/WEB-INF/jsp/Register.jsp").forward(request, response);
-	}
+		Object userId = request.getSession().getAttribute("userid");
+		if(userId==null){
+			request.setAttribute("message", "There is no one logged in.");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		else{
+			long id = (Long)userId;
+			UserRDG u = null;
+			try {
+				u = UserRDG.find(id);
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			request.getSession(true).invalidate();
+			request.setAttribute("message", "User '" + u.getUsername() + "' has been successfully logged out.");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
+		}
+	}	
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String username = request.getParameter("username");
-		String password = request.getParameter("password");
-		UserRDG newUser = new UserRDG(0, username, HashUtil.hash(password));
-		try {
-			newUser.insert();
-		} catch (SQLException e) {
-			request.setAttribute("errorMessage", "Username already taken. Choose another username.");
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/Register.jsp").forward(request, response);
-		}
+		doGet(request, response);
 	}
 
 }
