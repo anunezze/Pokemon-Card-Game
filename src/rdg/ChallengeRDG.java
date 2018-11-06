@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import database.DbRegistry;
 import util.ChallengeStatus;
@@ -56,6 +58,23 @@ public class ChallengeRDG {
 					 	rs.getInt("challenger"), 
 					 	rs.getInt("challengee"), 
 					 	ChallengeStatus.valueOf(rs.getInt("status")));
+		}
+		ps.close();
+		connection.close();
+		
+		return result;
+	}
+	public static List<ChallengeRDG> findAllOpen() throws SQLException{
+		Connection connection = new DbRegistry().getConnection();
+		List<ChallengeRDG> result = new ArrayList<ChallengeRDG>();
+		String query = "SELECT * FROM challenge";
+		PreparedStatement ps = connection.prepareStatement(query);
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){
+			result.add(new ChallengeRDG(rs.getInt("id"), 
+						rs.getInt("challenger"),
+						rs.getInt("challengee"), 
+						ChallengeStatus.valueOf(rs.getInt("status"))));
 		}
 		ps.close();
 		connection.close();
