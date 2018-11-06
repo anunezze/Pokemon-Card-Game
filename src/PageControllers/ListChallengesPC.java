@@ -31,11 +31,19 @@ public class ListChallengesPC extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		List<ChallengeRDG> challenges = null;
 		try {
-			List<ChallengeRDG> challenges = ChallengeRDG.findAllOpen();
+			challenges = ChallengeRDG.findAllOpen();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		if(challenges == null){
+			request.setAttribute("message", "SQL problem");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		else{
+			request.setAttribute("challenges", challenges);
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/challenges.jsp").forward(request, response);
 		}
 	}
 
