@@ -69,7 +69,7 @@ public class ChallengeRDG {
 		PreparedStatement ps = connection.prepareStatement(query);
 		ps.setLong(1, this.challenger);
 		ps.setLong(2, this.challengee);
-		ps.setInt(2, this.status.ordinal());
+		ps.setInt(3, this.status.ordinal());
 		ps.executeUpdate();
 		ps.close();
 		connection.close();
