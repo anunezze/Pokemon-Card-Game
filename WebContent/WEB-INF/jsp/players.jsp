@@ -9,18 +9,14 @@
 </head>
 <body>
 {
-	"challenges":[
-	<c:forEach var="challenge" items="${challenges}">
+	"players":[
+		<c:forEach var="p" items="${players}">
 		{
-			"id":${challenge.id}, 
-			"challenger":${challenge.challenger}, 
-			"challengee": ${challenge.challengee}, 
-			"status": ${challenge.status.ordinal()}
+			"id":"${p.id}", 
+			"user":"${p.username}"
 		},
 	</c:forEach>
 	]
-	
 }
-
 </body>
 </html>

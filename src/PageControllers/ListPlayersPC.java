@@ -11,19 +11,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import rdg.ChallengeRDG;
+import rdg.UserRDG;
 
 /**
- * Servlet implementation class ListChallenges
+ * Servlet implementation class ListPlayers
  */
-@WebServlet("/ListChallenges")
-public class ListChallengesPC extends HttpServlet {
+@WebServlet("/ListPlayers")
+public class ListPlayersPC extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ListChallengesPC() {
+    public ListPlayersPC() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,20 +32,14 @@ public class ListChallengesPC extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		List<ChallengeRDG> challenges = new ArrayList<ChallengeRDG>();
+		List<UserRDG> players = new ArrayList<UserRDG>();
 		try {
-			challenges = ChallengeRDG.findAllOpen();
+			players = UserRDG.findAll();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		if(challenges == null){
-			request.setAttribute("message", "SQL problem");
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-		}
-		else{
-			request.setAttribute("challenges", challenges);
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/challenges.jsp").forward(request, response);
-		}
+		request.setAttribute("players", players);
+		getServletContext().getRequestDispatcher("/WEB-INF/jsp/players.jsp").forward(request, response);
 	}
 
 	/**

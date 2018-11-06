@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import database.DbRegistry;
 
@@ -68,6 +70,18 @@ public class UserRDG {
 		}
 		ps.close();
 		connection.close();
+		
+		return result;
+	}
+	public static List<UserRDG> findAll() throws SQLException{
+		List<UserRDG> result = new ArrayList<UserRDG>();
+		Connection connection = new DbRegistry().getConnection();
+		String query = "SELECT * FROM user";
+		PreparedStatement ps = connection.prepareStatement(query);
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){
+			result.add(new UserRDG(rs.getInt("id"), rs.getString("username"), rs.getString("password")));
+		}
 		
 		return result;
 	}
