@@ -29,7 +29,7 @@ public class LogoutPC extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Object userId = request.getSession().getAttribute("userid");
+		Object userId = request.getSession(true).getAttribute("userid");
 		if(userId==null){
 			request.setAttribute("message", "There is no one logged in.");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
@@ -39,9 +39,13 @@ public class LogoutPC extends HttpServlet {
 			UserRDG u = null;
 			try {
 				u = UserRDG.find(id);
-				
 			} catch (SQLException e) {
-				e.printStackTrace();
+				request.setAttribute("message", "SQLException");
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			}
+			if(u == null){
+				request.setAttribute("message", "User was not found with id:" + id);
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 			}
 			request.getSession(true).invalidate();
 			request.setAttribute("message", "User '" + u.getUsername() + "' has been successfully logged out.");

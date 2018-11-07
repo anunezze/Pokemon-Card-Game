@@ -10,7 +10,6 @@
 {
 	"status":"success",
 	"message":"${message}"
-	${error}
 }
 </body>
 </html>

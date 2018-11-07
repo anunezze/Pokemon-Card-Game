@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mysql.jdbc.Statement;
+
 import database.DbRegistry;
 
 public class UserRDG {
@@ -89,10 +91,14 @@ public class UserRDG {
 	public void insert() throws SQLException{
 		Connection connection = new DbRegistry().getConnection();
 		String query = "INSERT INTO user (username,password) VALUES (?,?);";
-		PreparedStatement ps = connection.prepareStatement(query);
+		PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 		ps.setString(1, this.username);
 		ps.setString(2, this.password);
 		ps.executeUpdate();
+		ResultSet rs = ps.getGeneratedKeys();
+		if(rs.next()){
+			this.id = rs.getInt(1);
+		}
 		ps.close();
 		connection.close();
 	}
