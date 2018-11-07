@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import rdg.ChallengeRDG;
+import rdg.DeckRDG;
 import rdg.UserRDG;
 import util.ChallengeStatus;
 
@@ -34,6 +35,7 @@ public class ChallengePlayerPC extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		long challengeeID = Long.parseLong(request.getParameter("challengee"));
 		long myId = -1;
+		DeckRDG deck1 = null, deck2 = null;
 		try{
 			myId = (Long)request.getSession().getAttribute("userid");
 		} catch(NullPointerException e){
@@ -55,16 +57,34 @@ public class ChallengePlayerPC extends HttpServlet {
 			request.setAttribute("message", "This player doesn't exist.");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
-		else {
-			ChallengeRDG challenge = new ChallengeRDG(0, challenger.getId(), challengee.getId(), ChallengeStatus.OPEN);
-			try {
-				challenge.insert();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+		
+		try {
+			deck1 = DeckRDG.findByPlayer(challenger.getId());
+			deck2 = DeckRDG.findByPlayer(challengee.getId());
+		} catch (SQLException e1) {
+			request.setAttribute("message", "SQL PRBLEM");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		if(deck1 == null){
+			request.setAttribute("message", "You don't have a deck");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		if(deck2 == null){
+			request.setAttribute("message", "Challengee doesn't have a deck.");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		
+	
+		ChallengeRDG challenge = new ChallengeRDG(0, challenger.getId(), challengee.getId(), ChallengeStatus.OPEN);
+		try {
+			challenge.insert();
 			request.setAttribute("message", "Challenge was sent to " + challengee.getUsername());
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
-		}
+			
+		} catch (SQLException e) {
+			request.setAttribute("message", "SQL PRBLEM");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}		
 	}
 
 	/**
