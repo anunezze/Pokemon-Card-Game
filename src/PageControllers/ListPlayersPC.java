@@ -38,8 +38,15 @@ public class ListPlayersPC extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		request.setAttribute("players", players);
-		getServletContext().getRequestDispatcher("/WEB-INF/jsp/players.jsp").forward(request, response);
+		if(players.isEmpty()){
+			request.setAttribute("message", "There is no player");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		else{
+			request.setAttribute("players", players);
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/players.jsp").forward(request, response);
+		}
+		
 	}
 
 	/**
