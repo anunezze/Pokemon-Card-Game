@@ -94,4 +94,17 @@ public class ChallengeRDG {
 		connection.close();
 	}
 	
+	public void update() throws SQLException{
+		Connection connection = new DbRegistry().getConnection();
+		String query = "UPDATE challenge SET challenger=?,challengee=?, status=? WHERE id=?;";
+		PreparedStatement ps = connection.prepareStatement(query);
+		ps.setLong(1, this.challenger);
+		ps.setLong(2, this.challengee);
+		ps.setInt(3, this.status.ordinal());
+		ps.setLong(4, this.id);
+		ps.executeUpdate();
+		ps.close();
+		connection.close();
+	}
+	
 }
