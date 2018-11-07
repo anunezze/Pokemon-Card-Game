@@ -32,6 +32,12 @@ public class ListChallengesPC extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		try{
+			long myId = (Long)request.getSession().getAttribute("userid");
+		} catch(NullPointerException e){
+			request.setAttribute("message", "Need to log in.");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
 		List<ChallengeRDG> challenges = new ArrayList<ChallengeRDG>();
 		try {
 			challenges = ChallengeRDG.findAllOpen();

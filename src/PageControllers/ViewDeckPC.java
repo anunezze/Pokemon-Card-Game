@@ -43,6 +43,9 @@ public class ViewDeckPC extends HttpServlet {
 		} catch (SQLException e) {
 			request.setAttribute("message", "SQL error");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		} catch (Exception e) {
+			request.setAttribute("message", e.getMessage());
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		if(deck == null){
 			request.setAttribute("message", "You have no deck");

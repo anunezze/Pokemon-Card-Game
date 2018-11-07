@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import util.IdGenerator;
+
+import com.mysql.jdbc.Statement;
 
 import database.DbRegistry;
 import pojo.Card;
@@ -16,11 +19,17 @@ public class DeckRDG {
 	private long ownerId;
 	private List<Card> cards;
 	
-	public DeckRDG(long id, long ownerId, List<Card> cards) {
+	public DeckRDG(long id, long ownerId, List<Card> cards) throws Exception {
 		super();
 		this.id = id;
 		this.ownerId = ownerId;
 		this.cards = cards;
+		if(cards.size()>40){
+			throw new Exception("Too many cards.");
+		}
+		else if(cards.size()<40){
+			throw new Exception("Too few cards.");
+		}
 	}
 
 	public List<Card> getCards() {
@@ -39,7 +48,7 @@ public class DeckRDG {
 		return id;
 	}
 	
-	public static DeckRDG findByPlayer(long playerId) throws SQLException{
+	public static DeckRDG findByPlayer(long playerId) throws Exception{
 		DeckRDG result = null;
 		Connection connection = new DbRegistry().getConnection();
 		String query = "SELECT * FROM deck WHERE owner_id =? ORDER BY id";
@@ -65,7 +74,19 @@ public class DeckRDG {
 		
 		return result;
 	}
-	public void insert(){
-		
+	public void insert() throws SQLException{
+		long deckId = IdGenerator.createID();
+		Connection connection = new DbRegistry().getConnection();
+		for(Card c : this.cards){
+			String query = "INSERT INTO deck (id,owner_id,card_type, card_name) VALUES (?,?,?,?);";
+			PreparedStatement ps = connection.prepareStatement(query);
+			ps.setLong(1,deckId);
+			ps.setLong(2,this.ownerId);
+			ps.setString(3,String.valueOf(c.getType()));
+			ps.setString(4, c.getName());
+			ps.executeUpdate();
+			ps.close();
+		}
+		connection.close();
 	}
 }

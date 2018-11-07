@@ -68,6 +68,9 @@ public class ChallengePlayerPC extends HttpServlet {
 		} catch (SQLException e1) {
 			request.setAttribute("message", "SQL PRBLEM");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		} catch (Exception e) {
+			request.setAttribute("message", e.getMessage());
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		if(deck1 == null){
 			request.setAttribute("message", "You don't have a deck");

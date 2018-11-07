@@ -55,6 +55,9 @@ public class AcceptChallengePC extends HttpServlet {
 			game.insert();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} catch (Exception e) {
+			request.setAttribute("message", e.getMessage());
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 	}
 
