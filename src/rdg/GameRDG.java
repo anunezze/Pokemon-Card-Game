@@ -2,7 +2,9 @@ package rdg;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import database.DbRegistry;
 
@@ -46,12 +48,16 @@ public class GameRDG {
 	public void insert() throws SQLException{
 		Connection connection = new DbRegistry().getConnection();
 		String query = "INSERT INTO game (player1,player2, deck1, deck2) VALUES (?,?,?,?);";
-		PreparedStatement ps = connection.prepareStatement(query);
+		PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 		ps.setLong(1, this.player1);
 		ps.setLong(2, this.player2);
 		ps.setLong(3, this.deck1);
 		ps.setLong(4, this.deck2);
 		ps.executeUpdate();
+		ResultSet rs = ps.getGeneratedKeys();
+		if(rs.next()){
+			this.id = rs.getInt(1);
+		}
 		ps.close();
 		connection.close();
 	}
