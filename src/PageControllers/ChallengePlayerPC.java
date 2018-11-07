@@ -42,6 +42,10 @@ public class ChallengePlayerPC extends HttpServlet {
 			request.setAttribute("message", "Cannot challenge a player if you are not logged in.");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
+		if(myId == challengeeID){
+			request.setAttribute("message", "Cannot challenge yourself");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
 		
 		UserRDG challengee = null;
 		UserRDG challenger = null;
