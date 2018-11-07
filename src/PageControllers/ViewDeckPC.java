@@ -9,21 +9,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import rdg.ChallengeRDG;
-import rdg.UserRDG;
-import util.ChallengeStatus;
+import rdg.DeckRDG;
 
 /**
- * Servlet implementation class ChallengePlayer
+ * Servlet implementation class ViewDeck
  */
-@WebServlet("/ChallengePlayer")
-public class ChallengePlayerPC extends HttpServlet {
+@WebServlet("/ViewDeck")
+public class ViewDeckPC extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ChallengePlayerPC() {
+    public ViewDeckPC() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,45 +30,33 @@ public class ChallengePlayerPC extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		long challengeeID = Long.parseLong(request.getParameter("challengee"));
 		long myId = -1;
 		try{
 			myId = (Long)request.getSession().getAttribute("userid");
 		} catch(NullPointerException e){
-			request.setAttribute("message", "Cannot challenge a player if you are not logged in.");
+			request.setAttribute("message", "Need to log in.");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
-		
-		UserRDG challengee = null;
-		UserRDG challenger = null;
+		DeckRDG deck = null;
 		try {
-			challenger = UserRDG.find(myId);
-			challengee = UserRDG.find(challengeeID);
+			deck = DeckRDG.findByPlayer(myId);
 		} catch (SQLException e) {
-			e.printStackTrace();
-			request.setAttribute("message", "SQL PRBLEM");
+			request.setAttribute("message", "SQL error");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
-		if(challengee == null){
-			request.setAttribute("message", "This player doesn't exist.");
+		if(deck == null){
+			request.setAttribute("message", "You have no deck");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
-		else {
-			ChallengeRDG challenge = new ChallengeRDG(0, challenger.getId(), challengee.getId(), ChallengeStatus.OPEN);
-			try {
-				challenge.insert();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			request.setAttribute("message", "Challenge was sent to " + challengee.getUsername());
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
-		}
+		request.setAttribute("deck", deck);
+		getServletContext().getRequestDispatcher("/WEB-INF/jsp/deck.jsp").forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

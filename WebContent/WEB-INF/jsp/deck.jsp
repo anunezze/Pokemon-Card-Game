@@ -9,14 +9,14 @@
 </head>
 <body>
 {
-	"players":[
-		<c:forEach var="p" items="${players}">
-		{
-			"id":"${p.id}", 
-			"user":"${p.username}"
-		},
+	"deck":{
+		"id":${deck.id},
+		"cards":[
+		<c:forEach var="card" items="${deck.cards}">
+		{"t":"${card.type}", "n":"${card.name}"},
 		</c:forEach>
-	]
+		]
+	}
 }
 </body>
 </html>

@@ -65,4 +65,7 @@ public class DeckRDG {
 		
 		return result;
 	}
+	public void insert(){
+		
+	}
 }
