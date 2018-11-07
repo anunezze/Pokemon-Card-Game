@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import rdg.ChallengeRDG;
-import rdg.UserRDG;
+import rdg.DeckRDG;
+import rdg.GameRDG;
 import util.ChallengeStatus;
 
 /**
@@ -32,19 +33,26 @@ public class AcceptChallengePC extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Long challengeId = (Long.parseLong(request.getParameter("challenge")));
+		try{
+			long userid = (Long)request.getSession(true).getAttribute("userid");
+		}
+		catch(NullPointerException e){
+			
+		}
+		long challengeId = (Long.parseLong(request.getParameter("challenge")));
 		ChallengeRDG challenge = null;
-		UserRDG challenger = null;
 		try {
-			UserRDG challengee = UserRDG.find((Long)request.getSession().getAttribute("userid"));
 			challenge = ChallengeRDG.find(challengeId);
-			challenger = UserRDG.find(challenge.getChallengee());
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}		
 		challenge.setStatus(ChallengeStatus.ACCEPTED);
 		try {
 			challenge.update();
+			DeckRDG deck1 = DeckRDG.findByPlayer(challenge.getChallenger());
+			DeckRDG deck2 = DeckRDG.findByPlayer(challenge.getChallengee());
+			GameRDG game = new GameRDG(0, challenge.getChallenger(), challenge.getChallengee(), deck1.getId(), deck2.getId());
+			game.insert();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
