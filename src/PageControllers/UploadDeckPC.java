@@ -1,11 +1,19 @@
 package PageControllers;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import pojo.Card;
+import rdg.DeckRDG;
+import util.IdGenerator;
 
 /**
  * Servlet implementation class UploadDeck
@@ -19,20 +27,35 @@ public class UploadDeckPC extends HttpServlet {
      */
     public UploadDeckPC() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		long userId = -1;
 		try{
-			long userId = (Long)request.getSession(true).getAttribute("userid");
+			userId = (Long)request.getSession(true).getAttribute("userid");
 		}
 		catch(NullPointerException e){
 			request.setAttribute("message", "Can't upload a deck if not logged in.");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
+		String deckParameter = request.getParameter("deck");
+		DeckRDG deck = null;
+		try {
+			deck = new DeckRDG(IdGenerator.getInstance().createID(), userId, deckParameter);
+			deck.insert();
+		} catch(SQLException e){
+			request.setAttribute("message", "SQL error");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		catch (Exception e) {
+			request.setAttribute("message", e.getMessage());
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}		
+		request.setAttribute("message", "Upload was done successfully");
+		getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
 	}
 
 	/**
@@ -42,5 +65,47 @@ public class UploadDeckPC extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-
+	private String deckString(){
+		  return  "e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"p \"Pikachu\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"p \"Pikachu\"\n" +
+					"p \"Meowth\"\n" +
+					"e \"Lightning\"\n" +
+					"t \"Tierno\"\n" +
+					"t \"Tierno\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"p \"Pikachu\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"p \"Pikachu\"\n" +
+					"p \"Meowth\"\n" +
+					"e \"Lightning\"\n" +
+					"t \"Tierno\"\n" +
+					"t \"Tierno\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"p \"Pikachu\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"p \"Pikachu\"\n" +
+					"p \"Meowth\"\n" +
+					"e \"Lightning\"\n" +
+					"t \"Tierno\"\n" +
+					"t \"Tierno\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n" +
+					"e \"Lightning\"\n";
+	}
 }

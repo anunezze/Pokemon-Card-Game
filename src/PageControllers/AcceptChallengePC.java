@@ -37,7 +37,8 @@ public class AcceptChallengePC extends HttpServlet {
 			long userid = (Long)request.getSession(true).getAttribute("userid");
 		}
 		catch(NullPointerException e){
-			
+			request.setAttribute("message", "Need to log in.");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		long challengeId = (Long.parseLong(request.getParameter("challenge")));
 		ChallengeRDG challenge = null;
@@ -46,16 +47,31 @@ public class AcceptChallengePC extends HttpServlet {
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}		
+		if(challenge == null){
+			request.setAttribute("message", "Challenge was not found");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
 		challenge.setStatus(ChallengeStatus.ACCEPTED);
 		try {
 			challenge.update();
 			DeckRDG deck1 = DeckRDG.findByPlayer(challenge.getChallenger());
 			DeckRDG deck2 = DeckRDG.findByPlayer(challenge.getChallengee());
+			if(deck1==null){
+				request.setAttribute("message", "Challenger doesn't have a deck.");
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			}
+			else if(deck2 == null){
+				request.setAttribute("message", "Challengee doesn't have a deck.");
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			}
 			GameRDG game = new GameRDG(0, challenge.getChallenger(), challenge.getChallengee(), deck1.getId(), deck2.getId());
 			game.insert();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			request.setAttribute("message", "SQL error");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		} catch (Exception e) {
+			e.printStackTrace();
 			request.setAttribute("message", e.getMessage());
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}

@@ -20,16 +20,33 @@ public class DeckRDG {
 	private List<Card> cards;
 	
 	public DeckRDG(long id, long ownerId, List<Card> cards) throws Exception {
-		super();
 		this.id = id;
 		this.ownerId = ownerId;
 		this.cards = cards;
 		if(cards.size()>40){
-			throw new Exception("Too many cards.");
+			throw new Exception("Too many cards in deck of user #" + this.ownerId);
 		}
 		else if(cards.size()<40){
-			throw new Exception("Too few cards.");
+			throw new Exception("Too few cards in deck of user #" + this.ownerId);
 		}
+	}
+	
+	public DeckRDG(long id, long ownerId, String cards) throws Exception{
+		this.id = id;
+		this.ownerId = ownerId;
+		List<Card> c = new ArrayList<Card>();
+		String[] cardsArray = cards.split("\n");
+		for(int i = 0; i< cardsArray.length; i++){
+			String[] line = cardsArray[i].split(" ");
+			c.add(new Card(line[0].charAt(0), line[1].substring(1, line[1].length()-1)));
+		}
+		if(c.size()>40){
+			throw new Exception("Too many cards in deck of user #" + this.ownerId);
+		}
+		else if(c.size()<40){
+			throw new Exception("Too few cards in deck of user #" + this.ownerId);
+		}
+		this.cards = c;
 	}
 
 	public List<Card> getCards() {
@@ -75,12 +92,11 @@ public class DeckRDG {
 		return result;
 	}
 	public void insert() throws SQLException{
-		long deckId = IdGenerator.createID();
 		Connection connection = new DbRegistry().getConnection();
 		for(Card c : this.cards){
 			String query = "INSERT INTO deck (id,owner_id,card_type, card_name) VALUES (?,?,?,?);";
 			PreparedStatement ps = connection.prepareStatement(query);
-			ps.setLong(1,deckId);
+			ps.setLong(1,this.id);
 			ps.setLong(2,this.ownerId);
 			ps.setString(3,String.valueOf(c.getType()));
 			ps.setString(4, c.getName());
