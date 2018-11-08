@@ -33,24 +33,44 @@ public class AcceptChallengePC extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		long userid =-1;
+		boolean process = true;
 		try{
-			long userid = (Long)request.getSession(true).getAttribute("userid");
+			userid = (Long)request.getSession(true).getAttribute("userid");
 		}
 		catch(NullPointerException e){
 			request.setAttribute("message", "Need to log in.");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			process = false;
 		}
 		long challengeId = (Long.parseLong(request.getParameter("challenge")));
 		ChallengeRDG challenge = null;
 		try {
 			challenge = ChallengeRDG.find(challengeId);
 		} catch (SQLException e1) {
+			process = false;
 			e1.printStackTrace();
 		}		
 		if(challenge == null){
 			request.setAttribute("message", "Challenge was not found");
 			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			process = false;
+		}
+		if(challenge.getChallengee() != userid) {
+			request.setAttribute("message", "This is not your challenge.");
+			if(!response.isCommitted())
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			process = false;
+		}
+		if(challenge.getChallenger() == userid) {
+			request.setAttribute("message", "Can't accept your own challenge.");
+			if(!response.isCommitted())
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			process = false;
+		}
+		if(!process) {
+			return;
 		}
 		challenge.setStatus(ChallengeStatus.ACCEPTED);
 		try {

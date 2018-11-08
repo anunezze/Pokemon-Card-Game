@@ -40,6 +40,9 @@ public class ListGamesPC extends HttpServlet {
 		}
 		try {
 			List<GameRDG> games = GameRDG.findAll();
+			request.setAttribute("games", games);
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/games.jsp").forward(request, response);
+			
 		} catch (SQLException e) {
 			request.setAttribute("message", "SQL ERROR");
 			if(!response.isCommitted())
