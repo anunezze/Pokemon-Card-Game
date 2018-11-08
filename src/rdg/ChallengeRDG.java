@@ -71,6 +71,7 @@ public class ChallengeRDG {
 		List<ChallengeRDG> result = new ArrayList<ChallengeRDG>();
 		String query = "SELECT * FROM challenge";
 		PreparedStatement ps = connection.prepareStatement(query);
+//		ps.setInt(1, 1);
 		ResultSet rs = ps.executeQuery();
 		while(rs.next()){
 			result.add(new ChallengeRDG(rs.getInt("id"), 
