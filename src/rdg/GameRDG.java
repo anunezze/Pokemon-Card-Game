@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import database.DbRegistry;
 
@@ -60,5 +62,21 @@ public class GameRDG {
 		}
 		ps.close();
 		connection.close();
+	}
+	public static List<GameRDG> findAll() throws SQLException{
+		List<GameRDG> result = new ArrayList<GameRDG>();
+		Connection connection = new DbRegistry().getConnection();
+		String query = "SELECT * FROM game";
+		PreparedStatement ps = connection.prepareStatement(query);
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){
+			result.add(new GameRDG(rs.getInt("id"),
+						rs.getInt("player1"), 
+						rs.getInt("player2"), 
+						rs.getInt("deck1"), 
+						rs.getInt("deck2")));
+		}
+		
+		return result;
 	}
 }

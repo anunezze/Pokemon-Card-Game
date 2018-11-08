@@ -69,6 +69,9 @@ public class AcceptChallengePC extends HttpServlet {
 			}
 			GameRDG game = new GameRDG(0, challenge.getChallenger(), challenge.getChallengee(), deck1.getId(), deck2.getId());
 			game.insert();
+			request.setAttribute("message", "Challenge was accepted");
+			if(!response.isCommitted())
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			request.setAttribute("message", "SQL error");
