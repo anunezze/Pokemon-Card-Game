@@ -70,6 +70,9 @@ public class RegisterPC extends HttpServlet{
 			}
 		}
 	}
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
 
 	public void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
 		

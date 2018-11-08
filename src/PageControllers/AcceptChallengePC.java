@@ -49,6 +49,7 @@ public class AcceptChallengePC extends HttpServlet {
 		}		
 		if(challenge == null){
 			request.setAttribute("message", "Challenge was not found");
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		challenge.setStatus(ChallengeStatus.ACCEPTED);
@@ -58,10 +59,12 @@ public class AcceptChallengePC extends HttpServlet {
 			DeckRDG deck2 = DeckRDG.findByPlayer(challenge.getChallengee());
 			if(deck1==null){
 				request.setAttribute("message", "Challenger doesn't have a deck.");
+				if(!response.isCommitted())
 				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 			}
 			else if(deck2 == null){
 				request.setAttribute("message", "Challengee doesn't have a deck.");
+				if(!response.isCommitted())
 				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 			}
 			GameRDG game = new GameRDG(0, challenge.getChallenger(), challenge.getChallengee(), deck1.getId(), deck2.getId());
@@ -69,10 +72,12 @@ public class AcceptChallengePC extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			request.setAttribute("message", "SQL error");
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("message", e.getMessage());
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 	}

@@ -42,16 +42,20 @@ public class ViewDeckPC extends HttpServlet {
 			deck = DeckRDG.findByPlayer(myId);
 		} catch (SQLException e) {
 			request.setAttribute("message", "SQL error");
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		} catch (Exception e) {
 			request.setAttribute("message", e.getMessage());
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		if(deck == null){
 			request.setAttribute("message", "You have no deck");
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		request.setAttribute("deck", deck);
+		if(!response.isCommitted())
 		getServletContext().getRequestDispatcher("/WEB-INF/jsp/deck.jsp").forward(request, response);
 	}
 

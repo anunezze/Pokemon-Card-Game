@@ -33,17 +33,26 @@ public class ChallengePlayerPC extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		long challengeeID = Long.parseLong(request.getParameter("challengee"));
+		long challengeeID = -1;
+		try {
+			challengeeID = Long.parseLong(request.getParameter("player"));
+		}
+		catch(NumberFormatException e) {
+			request.setAttribute("message", "No challenge entered.");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
 		long myId = -1;
-		DeckRDG deck1 = null, deck2 = null;
+		DeckRDG deck1 = null;
 		try{
 			myId = (Long)request.getSession().getAttribute("userid");
 		} catch(NullPointerException e){
 			request.setAttribute("message", "Cannot challenge a player if you are not logged in.");
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		if(myId == challengeeID){
 			request.setAttribute("message", "Cannot challenge yourself");
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		
@@ -55,43 +64,57 @@ public class ChallengePlayerPC extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			request.setAttribute("message", "SQL PRBLEM");
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		if(challengee == null){
 			request.setAttribute("message", "This player doesn't exist.");
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		
 		try {
 			deck1 = DeckRDG.findByPlayer(challenger.getId());
-			deck2 = DeckRDG.findByPlayer(challengee.getId());
 		} catch (SQLException e1) {
 			request.setAttribute("message", "SQL PRBLEM");
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		} catch (Exception e) {
 			request.setAttribute("message", e.getMessage());
+			if(!response.isCommitted())
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		if(challenger == null) {
+			request.setAttribute("message", "Challenger was not found in DB");
+			if(!response.isCommitted())
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		if(challengee == null) {
+			request.setAttribute("message", "Challengee was not found in DB");
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		if(deck1 == null){
 			request.setAttribute("message", "You don't have a deck");
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
-		if(deck2 == null){
-			request.setAttribute("message", "Challengee doesn't have a deck.");
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		if(challenger != null && challengee != null && deck1 != null) {
+			ChallengeRDG challenge = new ChallengeRDG(0, challenger.getId(), challengee.getId(), ChallengeStatus.OPEN);
+			try {
+				challenge.insert();
+				request.setAttribute("message", "Challenge was sent to " + challengee.getUsername());
+				if(!response.isCommitted())
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
+				
+			} catch (SQLException e) {
+				request.setAttribute("message", "SQL PRBLEM");
+				if(!response.isCommitted())
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			}
 		}
-		
 	
-		ChallengeRDG challenge = new ChallengeRDG(0, challenger.getId(), challengee.getId(), ChallengeStatus.OPEN);
-		try {
-			challenge.insert();
-			request.setAttribute("message", "Challenge was sent to " + challengee.getUsername());
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
-			
-		} catch (SQLException e) {
-			request.setAttribute("message", "SQL PRBLEM");
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-		}		
+				
 	}
 
 	/**

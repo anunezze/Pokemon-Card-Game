@@ -46,10 +46,12 @@ public class ListChallengesPC extends HttpServlet {
 		}
 		if(challenges == null){
 			request.setAttribute("message", "SQL problem");
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		else{
 			request.setAttribute("challenges", challenges);
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/challenges.jsp").forward(request, response);
 		}
 	}

@@ -48,13 +48,16 @@ public class UploadDeckPC extends HttpServlet {
 			deck.insert();
 		} catch(SQLException e){
 			request.setAttribute("message", "SQL error");
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		catch (Exception e) {
 			request.setAttribute("message", e.getMessage());
+			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}		
 		request.setAttribute("message", "Upload was done successfully");
+		if(!response.isCommitted())
 		getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
 	}
 

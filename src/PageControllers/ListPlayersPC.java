@@ -48,6 +48,7 @@ public class ListPlayersPC extends HttpServlet {
 		}
 		
 		request.setAttribute("players", players);
+		if(!response.isCommitted())
 		getServletContext().getRequestDispatcher("/WEB-INF/jsp/players.jsp").forward(request, response);
 		
 		
