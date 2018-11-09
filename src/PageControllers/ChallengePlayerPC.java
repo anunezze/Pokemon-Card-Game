@@ -13,6 +13,7 @@ import rdg.ChallengeRDG;
 import rdg.DeckRDG;
 import rdg.UserRDG;
 import util.ChallengeStatus;
+import util.IdGenerator;
 
 /**
  * Servlet implementation class ChallengePlayer
@@ -100,7 +101,7 @@ public class ChallengePlayerPC extends HttpServlet {
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		if(challenger != null && challengee != null && deck1 != null) {
-			ChallengeRDG challenge = new ChallengeRDG(0, challenger.getId(), challengee.getId(), ChallengeStatus.OPEN);
+			ChallengeRDG challenge = new ChallengeRDG(IdGenerator.getInstance().createID(), challenger.getId(), challengee.getId(), ChallengeStatus.OPEN);
 			try {
 				challenge.insert();
 				request.setAttribute("message", "Challenge was sent to " + challengee.getUsername());

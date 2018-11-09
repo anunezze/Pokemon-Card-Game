@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import rdg.ChallengeRDG;
 import rdg.DeckRDG;
 import rdg.GameRDG;
+import rdg.HandRDG;
 import util.ChallengeStatus;
+import util.IdGenerator;
 
 /**
  * Servlet implementation class AcceptChallenge
@@ -41,37 +43,32 @@ public class AcceptChallengePC extends HttpServlet {
 		catch(NullPointerException e){
 			request.setAttribute("message", "Need to log in.");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-			process = false;
+			return;
 		}
 		long challengeId = (Long.parseLong(request.getParameter("challenge")));
 		ChallengeRDG challenge = null;
 		try {
 			challenge = ChallengeRDG.find(challengeId);
 		} catch (SQLException e1) {
-			process = false;
 			e1.printStackTrace();
+			return;
 		}		
 		if(challenge == null){
 			request.setAttribute("message", "Challenge was not found");
-			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-			process = false;
+			return;
 		}
 		if(challenge.getChallengee() != userid) {
 			request.setAttribute("message", "This is not your challenge.");
-			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-			process = false;
+			return;
 		}
 		if(challenge.getChallenger() == userid) {
 			request.setAttribute("message", "Can't accept your own challenge.");
-			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-			process = false;
-		}
-		if(!process) {
 			return;
 		}
+		
 		challenge.setStatus(ChallengeStatus.ACCEPTED);
 		try {
 			challenge.update();
@@ -87,16 +84,35 @@ public class AcceptChallengePC extends HttpServlet {
 				if(!response.isCommitted())
 				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 			}
-			GameRDG game = new GameRDG(0, challenge.getChallenger(), challenge.getChallengee(), deck1.getId(), deck2.getId());
+			GameRDG game = new GameRDG(IdGenerator.getInstance().createID(), 
+						challenge.getChallenger(), 
+						challenge.getChallengee(), 
+						deck1.getId(), 
+						deck2.getId(),
+						"playing",
+						"playing");
 			game.insert();
+			HandRDG hand1 = new HandRDG(0L, 
+					game.getId(), 
+					game.getPlayer1(),
+					0, 
+					deck1.getCards().size(), 
+					0, IdGenerator.getInstance().createID());
+			hand1.insert();
+			HandRDG hand2 = new HandRDG(0L, 
+					game.getId(), 
+					game.getPlayer2(), 
+					0, deck2.getCards().size(), 
+					0, IdGenerator.getInstance().createID());
+			hand2.insert();
 			request.setAttribute("message", "Challenge was accepted");
 			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			request.setAttribute("message", "SQL error");
-			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			return;
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("message", e.getMessage());

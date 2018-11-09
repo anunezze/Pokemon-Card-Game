@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import util.IdGenerator;
 
-import com.mysql.jdbc.Statement;
-
 import database.DbRegistry;
 import pojo.Card;
 
@@ -38,7 +36,7 @@ public class DeckRDG {
 		String[] cardsArray = cards.split("\n");
 		for(int i = 0; i< cardsArray.length; i++){
 			String[] line = cardsArray[i].split(" ");
-			c.add(new Card(line[0].charAt(0), line[1].substring(1, line[1].length()-1)));
+			c.add(new Card(IdGenerator.getInstance().createID(), line[0].charAt(0), line[1].substring(1, line[1].length()-1)));
 		}
 		if(c.size()>40){
 			throw new Exception("Too many cards in deck of user #" + this.ownerId);
@@ -77,11 +75,11 @@ public class DeckRDG {
 		//Read first line
 		if(rs.next()){
 			deckId = rs.getInt("id");
-			cards.add(new Card(rs.getString("card_type").charAt(0), rs.getString("card_name")));
+			cards.add(new Card(rs.getInt("card_id"),rs.getString("card_type").charAt(0), rs.getString("card_name")));
 		}
 		//Read all next lines
 		while(rs.next() && rs.getInt("id") == deckId){
-			cards.add(new Card(rs.getString("card_type").charAt(0), rs.getString("card_name")));
+			cards.add(new Card(rs.getInt("card_id"),rs.getString("card_type").charAt(0), rs.getString("card_name")));
 		}
 		if(deckId != -1){
 			result = new DeckRDG(deckId, playerId, cards);
@@ -94,12 +92,13 @@ public class DeckRDG {
 	public void insert() throws SQLException{
 		Connection connection = new DbRegistry().getConnection();
 		for(Card c : this.cards){
-			String query = "INSERT INTO deck (id,owner_id,card_type, card_name) VALUES (?,?,?,?);";
+			String query = "INSERT INTO deck (id,owner_id,card_type, card_name, card_id) VALUES (?,?,?,?,?);";
 			PreparedStatement ps = connection.prepareStatement(query);
 			ps.setLong(1,this.id);
 			ps.setLong(2,this.ownerId);
 			ps.setString(3,String.valueOf(c.getType()));
 			ps.setString(4, c.getName());
+			ps.setLong(5, IdGenerator.getInstance().createID());
 			ps.executeUpdate();
 			ps.close();
 		}

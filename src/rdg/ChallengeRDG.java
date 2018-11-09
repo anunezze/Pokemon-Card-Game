@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mysql.jdbc.Statement;
-
 import database.DbRegistry;
 import util.ChallengeStatus;
 
@@ -87,16 +85,14 @@ public class ChallengeRDG {
 	
 	public void insert() throws SQLException{
 		Connection connection = new DbRegistry().getConnection();
-		String query = "INSERT INTO challenge (challenger,challengee, status) VALUES (?,?,?);";
-		PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-		ps.setLong(1, this.challenger);
-		ps.setLong(2, this.challengee);
-		ps.setInt(3, this.status.ordinal());
+		String query = "INSERT INTO challenge (id,challenger,challengee, status) VALUES (?,?,?,?);";
+		PreparedStatement ps = connection.prepareStatement(query);
+		ps.setLong(1,  this.id);
+		ps.setLong(2, this.challenger);
+		ps.setLong(3, this.challengee);
+		ps.setInt(4, this.status.ordinal());
 		ps.executeUpdate();
-		ResultSet rs = ps.getGeneratedKeys();
-		if(rs.next()){
-			this.id = rs.getInt(1);
-		}
+		
 		ps.close();
 		connection.close();
 	}

@@ -47,6 +47,7 @@ public class UploadDeckPC extends HttpServlet {
 			deck = new DeckRDG(IdGenerator.getInstance().createID(), userId, deckParameter);
 			deck.insert();
 		} catch(SQLException e){
+			e.getStackTrace();
 			request.setAttribute("message", "SQL error");
 			if(!response.isCommitted())
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);

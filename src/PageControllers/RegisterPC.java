@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import rdg.UserRDG;
 import util.HashUtil;
+import util.IdGenerator;
 
 /**
  * Servlet implementation class Register
@@ -54,7 +55,7 @@ public class RegisterPC extends HttpServlet{
 			} 
 		else {
 			
-			u = new UserRDG(0, user, HashUtil.hash(password));
+			u = new UserRDG(IdGenerator.getInstance().createID(), user, HashUtil.hash(password));
 			try {
 				u.insert();
 			} catch (SQLException e) {
