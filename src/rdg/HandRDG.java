@@ -31,6 +31,19 @@ public class HandRDG {
 	public long getId() {
 		return id;
 	}
+	
+	public void setGameId(long gameId) {
+		this.gameId = gameId;
+	}
+	public void setHandSize(int handSize) {
+		this.handSize = handSize;
+	}
+	public void setDeckSize(int deckSize) {
+		this.deckSize = deckSize;
+	}
+	public void setDiscardSize(int discardSize) {
+		this.discardSize = discardSize;
+	}
 	public long getGameId() {
 		return gameId;
 	}
@@ -81,6 +94,18 @@ public class HandRDG {
 		ps.setInt(5, this.deckSize);
 		ps.setInt(6, this.discardSize);
 		ps.setLong(7, this.benchId);
+		ps.executeUpdate();
+		ps.close();
+		connection.close();
+	}
+	public void update() throws SQLException {
+		Connection connection = new DbRegistry().getConnection();
+		String query = "UPDATE hand SET hand_size=?,deck_size=?, discard_size=? WHERE id=?;";
+		PreparedStatement ps = connection.prepareStatement(query);
+		ps.setInt(1, this.handSize);
+		ps.setInt(2, this.deckSize);
+		ps.setInt(3, this.discardSize);
+		ps.setLong(4, this.id);
 		ps.executeUpdate();
 		ps.close();
 		connection.close();

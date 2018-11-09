@@ -10,19 +10,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import rdg.GameRDG;
-import rdg.HandRDG;
 
 /**
- * Servlet implementation class DrawCardPC
+ * Servlet implementation class PlayPokemonToBench
  */
-@WebServlet("/DrawCard")
-public class DrawCardPC extends HttpServlet {
+@WebServlet("/PlayPokemonToBench")
+public class PlayPokemonToBenchPC extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public DrawCardPC() {
+    public PlayPokemonToBenchPC() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -42,35 +41,16 @@ public class DrawCardPC extends HttpServlet {
 				return;
 			}
 			long gameId = -1;
-			
-			try{
-				gameId = Long.parseLong(request.getParameter("game"));
-			}
-			catch(NumberFormatException e) {
-				request.setAttribute("message", "Please provide a game");
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-				return;
-			}
-			
+			gameId = Long.parseLong(request.getParameter("game"));
 			GameRDG game = GameRDG.find(gameId);
 			if(myId != game.getPlayer1() && myId != game.getPlayer2()) {
-				request.setAttribute("message", "This is not your game");
+				request.setAttribute("message", "Not your game.");
 				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 				return;
 			}
-			HandRDG hand = HandRDG.find(game.getId(), myId);
-			hand.setDeckSize(hand.getDeckSize()-1);
-			hand.setHandSize(hand.getHandSize() + 1);
-			hand.update();
-			
-			request.setAttribute("message", "User '" + myId + "' draw a card.");
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
-			request.setAttribute("message", "SQL error");
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-			return;
+			
 		}
 	}
 
