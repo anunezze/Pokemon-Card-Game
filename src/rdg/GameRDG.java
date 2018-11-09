@@ -59,6 +59,14 @@ public class GameRDG {
 		return deck2;
 	}
 	
+	public void setP1Status(String p1Status) {
+		this.p1Status = p1Status;
+	}
+
+	public void setP2Status(String p2Status) {
+		this.p2Status = p2Status;
+	}
+
 	public void insert() throws SQLException{
 		Connection connection = new DbRegistry().getConnection();
 		String query = "INSERT INTO game (id, player1,player2, deck1, deck2, p1_status, p2_status) VALUES (?,?,?,?,?,?,?);";
@@ -111,5 +119,21 @@ public class GameRDG {
 		}
 		
 		return result;
+	}
+	
+	public void update() throws SQLException {
+		Connection connection = new DbRegistry().getConnection();
+		String query = "UPDATE game SET player1=?,player2=?, deck1=?, deck2=?, p1_status=?, p2_status=? WHERE id=?;";
+		PreparedStatement ps = connection.prepareStatement(query);
+		ps.setLong(1, this.player1);
+		ps.setLong(2, this.player2);
+		ps.setLong(3, this.deck1);
+		ps.setLong(4, this.deck2);
+		ps.setString(5, this.p1Status);
+		ps.setString(6, this.p2Status);
+		ps.setLong(7, this.id);
+		ps.executeUpdate();
+		ps.close();
+		connection.close();
 	}
 }

@@ -31,11 +31,13 @@ public class ViewBoardPC extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Object userId = request.getSession(true).getAttribute("userid");
-		if(userId==null){
-			request.setAttribute("message", "There is no one logged in.");
+		long userId = -1;
+		try{
+			userId = (Long)request.getSession(true).getAttribute("userid");
+		}
+		catch(NullPointerException e){
+			request.setAttribute("message", "Not logged in.");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-			return;
 		}
 		long gameId = -1;
 		gameId = Long.parseLong(request.getParameter("game"));
@@ -49,6 +51,12 @@ public class ViewBoardPC extends HttpServlet {
 			hand2 = HandRDG.find(game.getId(), game.getPlayer2());
 		} catch (SQLException e) {
 			request.setAttribute("message", "SQL error");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			return;
+		}
+		
+		if(userId != game.getPlayer1() && userId != game.getPlayer2()) {
+			request.setAttribute("message", "This is not your game.");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 			return;
 		}

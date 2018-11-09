@@ -14,14 +14,14 @@ import rdg.GameRDG;
 /**
  * Servlet implementation class RetireFromGame
  */
-@WebServlet("/RetireFromGame")
-public class RetireFromGamePC extends HttpServlet {
+@WebServlet("/Retire")
+public class RetirePC extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public RetireFromGamePC() {
+    public RetirePC() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -64,10 +64,26 @@ public class RetireFromGamePC extends HttpServlet {
 		}
 		
 		if(game.getPlayer1() != myId && game.getPlayer2() != myId) {
-			request.setAttribute("message", "This is not your game. Cannot quit.");
+			request.setAttribute("message", "This is not your game.");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 			return;
 		}
+		if(myId == game.getPlayer1()) {
+			game.setP1Status("retired");
+		}
+		else if(myId == game.getPlayer2()) {
+			game.setP2Status("retired");
+		}
+		try {
+			game.update();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			request.setAttribute("message", "SQL error");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			return;
+		}
+		request.setAttribute("message", "User '" + myId + "' retired successfully from game " + game.getId());
+		getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
 	}
 
 	/**
