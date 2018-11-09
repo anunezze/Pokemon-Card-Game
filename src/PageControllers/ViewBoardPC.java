@@ -57,7 +57,10 @@ public class ViewBoardPC extends HttpServlet {
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 			return;
 		}
-		
+		request.setAttribute("game", game);
+		request.setAttribute("hand1", hand1);
+		request.setAttribute("hand2", hand2);
+		getServletContext().getRequestDispatcher("/WEB-INF/jsp/board.jsp").forward(request, response);
 	}
 
 	/**
