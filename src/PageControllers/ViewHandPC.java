@@ -3,6 +3,8 @@ package PageControllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,19 +13,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import database.DbRegistry;
+import pojo.Card;
+import rdg.DeckRDG;
 import rdg.GameRDG;
+import rdg.HandRDG;
 
 /**
- * Servlet implementation class RetireFromGame
+ * Servlet implementation class ViewHandPC
  */
-@WebServlet("/Retire")
-public class RetirePC extends HttpServlet {
+@WebServlet("/ViewHand")
+public class ViewHandPC extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public RetirePC() {
+    public ViewHandPC() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,8 +37,8 @@ public class RetirePC extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		long myId = -1;
 		try {
+			long myId = -1;
 			try{
 				myId = (Long)request.getSession().getAttribute("userid"); 
 			}
@@ -43,48 +48,35 @@ public class RetirePC extends HttpServlet {
 				return;
 			}
 			long gameId = -1;
-			
-			try{
-				gameId = Long.parseLong(request.getParameter("game"));
-			}
-			catch(NumberFormatException e) {
-				request.setAttribute("message", "Please provide a game");
-				if(!response.isCommitted())
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-				return;
-			}
+			gameId = Long.parseLong(request.getParameter("game"));
 			GameRDG game = GameRDG.find(gameId);
-			if(game==null) {
-				request.setAttribute("message", "Game was not found");
+			if(myId != game.getPlayer1() && myId != game.getPlayer2()) {
+				request.setAttribute("message", "Not your game.");
 				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 				return;
 			}
-			
-			if(game.getPlayer1() != myId && game.getPlayer2() != myId) {
-				request.setAttribute("message", "This is not your game.");
+			HandRDG hand = HandRDG.find(game.getId(), myId);
+			DeckRDG deck;
+			try {
+				deck = DeckRDG.findByPlayer(myId);
+			} catch (Exception e) {
+				request.setAttribute("message", e.getMessage());
 				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 				return;
 			}
-			if(myId == game.getPlayer1()) {
-				game.setP1Status("retired");
-			}
-			else if(myId == game.getPlayer2()) {
-				game.setP2Status("retired");
-			}
+			List<Card> cardsInHand = this.getCurrentHand(deck, hand);
+			request.setAttribute("cards", cardsInHand);
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/hand.jsp").forward(request, response);
 			
-			game.update();
-			request.setAttribute("message", "User '" + myId + "' retired successfully from game " + game.getId());
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
 		}
-		catch (SQLException e) {
-			request.setAttribute("message", "SQLException");
+		catch(SQLException e) {
 			Connection connection = new DbRegistry().getConnection();
 			try {
 				connection.close();
 			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 	}
 
@@ -95,5 +87,14 @@ public class RetirePC extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-
+	
+	private List<Card> getCurrentHand(DeckRDG deck, HandRDG hand){
+		List<Card> currentHand = new ArrayList<Card>();
+		int skip = hand.getDiscardSize();
+		for(int i = skip; i < skip + hand.getHandSize(); i++) {
+			currentHand.add(deck.getCards().get(i));
+		}
+		
+		return currentHand;
+	}
 }

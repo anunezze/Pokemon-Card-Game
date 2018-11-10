@@ -34,6 +34,7 @@ public class UploadDeckPC extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		long userId = -1;
+		
 		try{
 			userId = (Long)request.getSession(true).getAttribute("userid");
 		}
@@ -46,11 +47,6 @@ public class UploadDeckPC extends HttpServlet {
 		try {
 			deck = new DeckRDG(IdGenerator.getInstance().createID(), userId, deckParameter);
 			deck.insert();
-		} catch(SQLException e){
-			e.getStackTrace();
-			request.setAttribute("message", "SQL error");
-			if(!response.isCommitted())
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 		catch (Exception e) {
 			request.setAttribute("message", e.getMessage());
@@ -68,48 +64,5 @@ public class UploadDeckPC extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
-	}
-	private String deckString(){
-		  return  "e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"p \"Pikachu\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"p \"Pikachu\"\n" +
-					"p \"Meowth\"\n" +
-					"e \"Lightning\"\n" +
-					"t \"Tierno\"\n" +
-					"t \"Tierno\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"p \"Pikachu\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"p \"Pikachu\"\n" +
-					"p \"Meowth\"\n" +
-					"e \"Lightning\"\n" +
-					"t \"Tierno\"\n" +
-					"t \"Tierno\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"p \"Pikachu\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"p \"Pikachu\"\n" +
-					"p \"Meowth\"\n" +
-					"e \"Lightning\"\n" +
-					"t \"Tierno\"\n" +
-					"t \"Tierno\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n" +
-					"e \"Lightning\"\n";
 	}
 }

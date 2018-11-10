@@ -1,6 +1,7 @@
 package PageControllers;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import database.DbRegistry;
 import rdg.GameRDG;
 import rdg.HandRDG;
 
@@ -69,6 +71,12 @@ public class DrawCardPC extends HttpServlet {
 		catch(SQLException e) {
 			e.printStackTrace();
 			request.setAttribute("message", "SQL error");
+			Connection connection = new DbRegistry().getConnection();
+			try {
+				connection.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 			return;
 		}

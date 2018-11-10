@@ -1,6 +1,7 @@
 package PageControllers;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import database.DbRegistry;
 import rdg.UserRDG;
 
 /**
@@ -29,27 +31,33 @@ public class LogoutPC extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Object userId = request.getSession(true).getAttribute("userid");
-		if(userId==null){
-			request.setAttribute("message", "There is no one logged in.");
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-		}
-		else{
-			long id = (Long)userId;
-			UserRDG u = null;
+		try {
+			Object userId = request.getSession(true).getAttribute("userid");
+			if(userId==null){
+				request.setAttribute("message", "There is no one logged in.");
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			}
+			else{
+				long id = (Long)userId;
+				UserRDG u = UserRDG.find(id);
+				
+				if(u == null){
+					request.setAttribute("message", "User was not found with id:" + id);
+					getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+				}
+				request.getSession(true).invalidate();
+				request.setAttribute("message", "User '" + u.getUsername() + "' has been successfully logged out.");
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
+			}
+		} catch (SQLException e) {
+			request.setAttribute("message", "SQLException");
+			Connection connection = new DbRegistry().getConnection();
 			try {
-				u = UserRDG.find(id);
-			} catch (SQLException e) {
-				request.setAttribute("message", "SQLException");
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+				connection.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
 			}
-			if(u == null){
-				request.setAttribute("message", "User was not found with id:" + id);
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-			}
-			request.getSession(true).invalidate();
-			request.setAttribute("message", "User '" + u.getUsername() + "' has been successfully logged out.");
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 	}	
 

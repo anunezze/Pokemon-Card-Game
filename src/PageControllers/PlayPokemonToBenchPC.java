@@ -1,6 +1,7 @@
 package PageControllers;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -9,7 +10,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import database.DbRegistry;
+import rdg.DeckRDG;
 import rdg.GameRDG;
+import rdg.HandRDG;
 
 /**
  * Servlet implementation class PlayPokemonToBench
@@ -48,9 +52,26 @@ public class PlayPokemonToBenchPC extends HttpServlet {
 				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 				return;
 			}
+			HandRDG hand = HandRDG.find(game.getId(), myId);
+			if(hand.getHandSize() == 0) {
+				request.setAttribute("message", "You don't have a card in hand.");
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+				return;
+			}
+//			DeckRDG deck = DeckRDG.findByPlayer(myId);
+			
+			request.setAttribute("message", "User '" + myId + "' put a pokemon in his bench" + game.getId());
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
 		}
 		catch(SQLException e) {
-			
+			request.setAttribute("message", "SQLException");
+			Connection connection = new DbRegistry().getConnection();
+			try {
+				connection.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 	}
 

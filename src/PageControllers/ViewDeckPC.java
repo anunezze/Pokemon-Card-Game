@@ -40,10 +40,6 @@ public class ViewDeckPC extends HttpServlet {
 		DeckRDG deck = null;
 		try {
 			deck = DeckRDG.findByPlayer(myId);
-		} catch (SQLException e) {
-			request.setAttribute("message", "SQL error");
-			if(!response.isCommitted())
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		} catch (Exception e) {
 			request.setAttribute("message", e.getMessage());
 			if(!response.isCommitted())

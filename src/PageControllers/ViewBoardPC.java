@@ -1,6 +1,7 @@
 package PageControllers;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import database.DbRegistry;
 import rdg.GameRDG;
 import rdg.HandRDG;
 
@@ -32,43 +34,45 @@ public class ViewBoardPC extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		long userId = -1;
-		try{
-			userId = (Long)request.getSession(true).getAttribute("userid");
-		}
-		catch(NullPointerException e){
-			request.setAttribute("message", "Not logged in.");
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-		}
-		long gameId = -1;
-		gameId = Long.parseLong(request.getParameter("game"));
-		GameRDG game = null;
-		HandRDG hand1 = null;
-		HandRDG hand2 = null;
-		
 		try {
-			game = GameRDG.find(gameId);
-			hand1 = HandRDG.find(game.getId(), game.getPlayer1());
-			hand2 = HandRDG.find(game.getId(), game.getPlayer2());
-		} catch (SQLException e) {
-			request.setAttribute("message", "SQL error");
+			try{
+				userId = (Long)request.getSession(true).getAttribute("userid");
+			}
+			catch(NullPointerException e){
+				request.setAttribute("message", "Not logged in.");
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			}
+			long gameId = -1;
+			gameId = Long.parseLong(request.getParameter("game"));
+			GameRDG game = GameRDG.find(gameId);
+			HandRDG hand1 = HandRDG.find(game.getId(), game.getPlayer1());
+			HandRDG hand2 = HandRDG.find(game.getId(), game.getPlayer2());
+			
+			if(userId != game.getPlayer1() && userId != game.getPlayer2()) {
+				request.setAttribute("message", "This is not your game.");
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+				return;
+			}
+			if(game == null || hand1 == null || hand2 == null) {
+				request.setAttribute("message", "Was not found in db.");
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+				return;
+			}
+			request.setAttribute("game", game);
+			request.setAttribute("hand1", hand1);
+			request.setAttribute("hand2", hand2);
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/board.jsp").forward(request, response);
+		}catch (SQLException e) {
+			request.setAttribute("message", "SQLException");
+			Connection connection = new DbRegistry().getConnection();
+			try {
+				connection.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-			return;
 		}
 		
-		if(userId != game.getPlayer1() && userId != game.getPlayer2()) {
-			request.setAttribute("message", "This is not your game.");
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-			return;
-		}
-		if(game == null || hand1 == null || hand2 == null) {
-			request.setAttribute("message", "Was not found in db.");
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-			return;
-		}
-		request.setAttribute("game", game);
-		request.setAttribute("hand1", hand1);
-		request.setAttribute("hand2", hand2);
-		getServletContext().getRequestDispatcher("/WEB-INF/jsp/board.jsp").forward(request, response);
 	}
 
 	/**

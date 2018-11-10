@@ -1,6 +1,7 @@
 package PageControllers;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import database.DbRegistry;
 import rdg.ChallengeRDG;
 
 /**
@@ -32,27 +34,36 @@ public class ListChallengesPC extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		try{
-			long myId = (Long)request.getSession().getAttribute("userid");
-		} catch(NullPointerException e){
-			request.setAttribute("message", "Need to log in.");
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-		}
-		List<ChallengeRDG> challenges = new ArrayList<ChallengeRDG>();
 		try {
+			try{
+				long myId = (Long)request.getSession().getAttribute("userid");
+			} catch(NullPointerException e){
+				request.setAttribute("message", "Need to log in.");
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+				return;
+			}
+			List<ChallengeRDG> challenges = new ArrayList<ChallengeRDG>();
 			challenges = ChallengeRDG.findAllOpen();
-		} catch (SQLException e) {
-			e.printStackTrace();
+			if(challenges == null){
+				request.setAttribute("message", "Challenge was not found");
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+				return;
+			}
+			else{
+				request.setAttribute("challenges", challenges);
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/challenges.jsp").forward(request, response);
+				return;
+			}
 		}
-		if(challenges == null){
-			request.setAttribute("message", "SQL problem");
-			if(!response.isCommitted())
+		catch(SQLException e) {
+			request.setAttribute("message", "SQL error");
+			Connection connection = new DbRegistry().getConnection();
+			try {
+				connection.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-		}
-		else{
-			request.setAttribute("challenges", challenges);
-			if(!response.isCommitted())
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/challenges.jsp").forward(request, response);
 		}
 	}
 
