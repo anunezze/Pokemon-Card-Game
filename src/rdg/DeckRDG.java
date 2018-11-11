@@ -66,7 +66,7 @@ public class DeckRDG {
 	public static DeckRDG findByPlayer(long playerId) throws Exception{
 		DeckRDG result = null;
 		Connection connection = new DbRegistry().getConnection();
-		String query = "SELECT * FROM deck WHERE owner_id =? ORDER BY id";
+		String query = "SELECT * FROM deck WHERE owner_id =? ORDER BY card_id";
 		PreparedStatement ps = connection.prepareStatement(query);
 		ps.setLong(1, playerId);
 		ResultSet rs = ps.executeQuery();

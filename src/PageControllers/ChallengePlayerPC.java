@@ -101,6 +101,7 @@ public class ChallengePlayerPC extends HttpServlet {
 			}
 		}
 		catch(SQLException s) {
+			s.printStackTrace();
 			request.setAttribute("message", "SQL error");
 			Connection connection = new DbRegistry().getConnection();
 			try {
