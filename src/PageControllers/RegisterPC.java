@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import InputMapper.UserInputMapper;
 import core.UoW;
 import database.DbRegistry;
+import factory.UserFactory;
 import pojo.User;
 import rdg.UserRDG;
 import util.HashUtil;
@@ -42,11 +43,13 @@ public class RegisterPC extends HttpServlet{
 		String user = request.getParameter("user");
 		String password = request.getParameter("pass");
 		try {
+			DbRegistry.newConnection();
 			if(user==null || user.isEmpty() || password==null || password.isEmpty()) {
 				request.setAttribute("message", "Please enter both a username and a password.");
 				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 			} 
 			else {
+				UoW.newUoW();
 				User u = UserInputMapper.find(user);
 				if(u != null) {
 					request.setAttribute("message", "That user has already registered.");
@@ -54,8 +57,7 @@ public class RegisterPC extends HttpServlet{
 					return;
 				} 
 				else {
-					UoW.newUoW();
-					u = new User(IdGenerator.getInstance().createID(), 1, user, HashUtil.hash(password));
+					u = UserFactory.createNew(IdGenerator.getInstance().createID(), 1, user, HashUtil.hash(password));
 					UoW.getCurrent().commit();
 					long id = u.getId();
 					request.setAttribute("id", id);
@@ -65,13 +67,13 @@ public class RegisterPC extends HttpServlet{
 					return;
 				}
 			}
+			DbRegistry.getConnection().close();
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
 			request.setAttribute("message", "SQLException");
-			Connection connection = new DbRegistry().getConnection();
 			try {
-				connection.close();
+				DbRegistry.getConnection().close();
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}

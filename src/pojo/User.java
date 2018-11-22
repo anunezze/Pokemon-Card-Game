@@ -8,7 +8,6 @@ public class User extends DomainObject {
 		super(id, version);
 		this.username = username;
 		this.password = password;
-		this.markNew();
 	}
 
 	public String getUsername() {

@@ -23,12 +23,12 @@ public abstract class DomainObject {
 		return id;
 	}
 
-	protected void markNew() {
+	public void markNew() {
 		UoW.getCurrent().registerNew(this);
 	}
 	
-	protected void markClean() {
-		UoW.getCurrent().registerClean();
+	public void markClean() {
+		UoW.getCurrent().registerClean(this);
 	}
 	
 	protected void markDirty() {

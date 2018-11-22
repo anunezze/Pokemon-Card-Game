@@ -4,53 +4,48 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DbRegistry {
+public abstract class DbRegistry {
 	
-	private Connection connection;
-	private String database = "pokemon_db";
-	private String user ="root";
-	private String password ="a;sldkfj";
+	private static ThreadLocal<Connection> connectionThread = new ThreadLocal<Connection>();
 	
-	public DbRegistry(){
-		
+	public static void newConnection() {
+		String database = "pokemon_db";
+		String user ="root";
+		String password ="a;sldkfj";
+		Connection connection;
 		try {
 //			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		try {
 			
-//			this.connection = DriverManager.getConnection(
+//			connection = DriverManager.getConnection(
 //					"jdbc:mysql://localhost/" + this.database +
 //					"?user="+ this.user+"&password="+this.password+"&characterEncoding=UTF-8&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true");
-            this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + this.database + "?"
-                    +"user="+this.user + "&password=" + this.password);
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + database + "?"
+                    +"user="+user + "&password=" + password);
+            
+            connectionThread.set(connection);
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
-	
-	public Connection getConnection() {
-		return connection;
+	public static Connection getConnection() {
+		return connectionThread.get();
 	}
 
-	public void closeConnection(){
+	public static void closeConnection(){
 		try {
-			this.connection.close();
+			connectionThread.get().close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

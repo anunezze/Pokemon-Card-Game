@@ -21,10 +21,10 @@ public class UoW {
 	private static ThreadLocal<UoW> current = new ThreadLocal<UoW>();
 	
 	private UoW() {
-		mapperDictionary.put(User.class, UserOutputMapper.class);
+		
 	}
 	
-	public void registerClean() {
+	public void registerClean(DomainObject obj) {
 		
 	}
 	
