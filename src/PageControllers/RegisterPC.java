@@ -10,7 +10,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import InputMapper.UserInputMapper;
+import core.UoW;
 import database.DbRegistry;
+import pojo.User;
 import rdg.UserRDG;
 import util.HashUtil;
 import util.IdGenerator;
@@ -44,20 +47,19 @@ public class RegisterPC extends HttpServlet{
 				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 			} 
 			else {
-				UserRDG u = UserRDG.find(user);
+				User u = UserInputMapper.find(user);
 				if(u != null) {
 					request.setAttribute("message", "That user has already registered.");
 					getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 					return;
 				} 
 				else {
-					
-					u = new UserRDG(IdGenerator.getInstance().createID(), user, HashUtil.hash(password));
-					u.insert();
+					UoW.newUoW();
+					u = new User(IdGenerator.getInstance().createID(), 1, user, HashUtil.hash(password));
+					UoW.getCurrent().commit();
 					long id = u.getId();
 					request.setAttribute("id", id);
 					request.getSession(true).setAttribute("userid", id);
-					
 					request.setAttribute("message", "User '" + user + "' has been successfully registered.");
 					getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
 					return;
@@ -65,6 +67,7 @@ public class RegisterPC extends HttpServlet{
 			}
 		}
 		catch (SQLException e) {
+			e.printStackTrace();
 			request.setAttribute("message", "SQLException");
 			Connection connection = new DbRegistry().getConnection();
 			try {

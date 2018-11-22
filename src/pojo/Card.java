@@ -1,23 +1,17 @@
 package pojo;
 
-public class Card {
-	private long id;
+public class Card extends DomainObject{
 	private char type;
 	private String name;
 	
-	public Card(long id,char type, String name) {
-		super();
-		this.id = id;
+	public Card(long id,int version, char type, String name){
+		super(id, version);
 		this.type = type;
 		this.name = name;
 	}
 
 	public char getType() {
 		return type;
-	}
-	
-	public long getId() {
-		return id;
 	}
 
 	public String getName() {
