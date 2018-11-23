@@ -12,7 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import InputMapper.UserInputMapper;
+import core.UoW;
 import database.DbRegistry;
+import pojo.User;
 import rdg.UserRDG;
 
 /**
@@ -35,30 +38,31 @@ public class ListPlayersPC extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
+			DbRegistry.newConnection();
+			UoW.newUoW();
 			try{
 				long userId = (Long)request.getSession(true).getAttribute("userid");
 			}
 			catch(NullPointerException e){
-				request.setAttribute("message", "Need to log in.");
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+				throw new Exception("Need to log in.");
 			}
 			
-			List<UserRDG> players = new ArrayList<UserRDG>();
-			players = UserRDG.findAll();
+			List<User> players = new ArrayList<User>();
+			players = UserInputMapper.findAll();
 			
 			request.setAttribute("players", players);
 			if(!response.isCommitted())
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/players.jsp").forward(request, response);	
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/players.jsp").forward(request, response);
+			DbRegistry.closeConnection();
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 			request.setAttribute("message", "SQL error");
-			Connection connection = new DbRegistry().getConnection();
-			try {
-				connection.close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
+			DbRegistry.closeConnection();
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		catch(Exception e) {
+			request.setAttribute("message", e.getMessage());
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 	}

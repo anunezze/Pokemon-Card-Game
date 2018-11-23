@@ -45,38 +45,35 @@ public class RegisterPC extends HttpServlet{
 		try {
 			DbRegistry.newConnection();
 			if(user==null || user.isEmpty() || password==null || password.isEmpty()) {
-				request.setAttribute("message", "Please enter both a username and a password.");
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+				throw new Exception("Please enter both a username and a password.");
+				
 			} 
 			else {
 				UoW.newUoW();
 				User u = UserInputMapper.find(user);
 				if(u != null) {
-					request.setAttribute("message", "That user has already registered.");
-					getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-					return;
+					throw new Exception("That user has already registered.");
 				} 
-				else {
-					u = UserFactory.createNew(IdGenerator.getInstance().createID(), 1, user, HashUtil.hash(password));
-					UoW.getCurrent().commit();
-					long id = u.getId();
-					request.setAttribute("id", id);
-					request.getSession(true).setAttribute("userid", id);
-					request.setAttribute("message", "User '" + user + "' has been successfully registered.");
-					getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
-					return;
-				}
+				u = UserFactory.createNew(IdGenerator.getInstance().createID(), 1, user, HashUtil.hash(password));
+				UoW.getCurrent().commit();
+				long id = u.getId();
+				request.setAttribute("id", id);
+				request.getSession(true).setAttribute("userid", id);
+				request.setAttribute("message", "User '" + user + "' has been successfully registered.");
+				getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
+				DbRegistry.closeConnection();
 			}
-			DbRegistry.getConnection().close();
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
 			request.setAttribute("message", "SQLException");
-			try {
-				DbRegistry.getConnection().close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
+			DbRegistry.closeConnection();
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			DbRegistry.closeConnection();
+			request.setAttribute("message", e.getMessage());
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 	}

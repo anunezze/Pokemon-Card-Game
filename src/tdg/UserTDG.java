@@ -30,4 +30,10 @@ public abstract class UserTDG {
 		ps.setString(1, username);
 		return ps.executeQuery();
 	}
+	
+	public static ResultSet findAll() throws SQLException {
+		String query = "SELECT * FROM user";
+		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
+		return ps.executeQuery();
+	}
 }

@@ -10,8 +10,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import InputMapper.UserInputMapper;
+import core.UoW;
 import database.DbRegistry;
+import pojo.User;
 import rdg.UserRDG;
+import tdg.UserTDG;
 import util.HashUtil;
 
 /**
@@ -33,29 +37,30 @@ public class LoginPC extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
+			DbRegistry.newConnection();
+			UoW.newUoW();
 			String username = request.getParameter("user");
 			String password = request.getParameter("pass");
-			UserRDG user = UserRDG.find(username);
+			User user = UserInputMapper.find(username);
 			
 			if(user == null || !user.getPassword().equals(HashUtil.hash(password))) {
-				request.setAttribute("message", "I do not recognize that username and password combination.");
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+				throw new Exception("I do not recognize that username and password combination.");			
 			} 
-			else {
-				long id = user.getId();
-				request.getSession(true).setAttribute("userid", id);
-				request.setAttribute("message", "User '" + user.getUsername() + "' has been successfully logged in.");
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
-			}
+			long id = user.getId();
+			request.getSession(true).setAttribute("userid", id);
+			request.setAttribute("message", "User '" + user.getUsername() + "' has been successfully logged in.");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
+			
+			DbRegistry.closeConnection();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			request.setAttribute("message", "SQL error");
-			Connection connection = new DbRegistry().getConnection();
-			try {
-				connection.close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
+			DbRegistry.closeConnection();
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		catch(Exception e) {
+			DbRegistry.closeConnection();
+			request.setAttribute("message", e.getMessage());
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 	}

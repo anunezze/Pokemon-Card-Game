@@ -10,7 +10,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import InputMapper.UserInputMapper;
+import core.UoW;
 import database.DbRegistry;
+import pojo.User;
 import rdg.UserRDG;
 
 /**
@@ -32,6 +35,8 @@ public class LogoutPC extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
+			DbRegistry.newConnection();
+			UoW.newUoW();
 			Object userId = request.getSession(true).getAttribute("userid");
 			if(userId==null){
 				request.setAttribute("message", "There is no one logged in.");
@@ -39,7 +44,7 @@ public class LogoutPC extends HttpServlet {
 			}
 			else{
 				long id = (Long)userId;
-				UserRDG u = UserRDG.find(id);
+				User u = UserInputMapper.find(id);
 				
 				if(u == null){
 					request.setAttribute("message", "User was not found with id:" + id);
@@ -49,14 +54,10 @@ public class LogoutPC extends HttpServlet {
 				request.setAttribute("message", "User '" + u.getUsername() + "' has been successfully logged out.");
 				getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
 			}
+			DbRegistry.closeConnection();
 		} catch (SQLException e) {
 			request.setAttribute("message", "SQLException");
-			Connection connection = new DbRegistry().getConnection();
-			try {
-				connection.close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
+			DbRegistry.closeConnection();
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 	}	
