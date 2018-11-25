@@ -31,11 +31,11 @@ public abstract class DomainObject {
 		UoW.getCurrent().registerClean(this);
 	}
 	
-	protected void markDirty() {
+	public void markDirty() {
 		UoW.getCurrent().registerDirty(this);
 	}
 	
-	protected void markDeleted() {
+	public void markDeleted() {
 		UoW.getCurrent().registerDeleted(this);
 	}
 }

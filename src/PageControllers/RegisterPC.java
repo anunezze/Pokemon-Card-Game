@@ -1,7 +1,6 @@
 package PageControllers;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -15,7 +14,6 @@ import core.UoW;
 import database.DbRegistry;
 import factory.UserFactory;
 import pojo.User;
-import rdg.UserRDG;
 import util.HashUtil;
 import util.IdGenerator;
 

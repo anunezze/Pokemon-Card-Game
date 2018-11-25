@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import OutputMapper.DeckOutputMapper;
 import core.UoW;
 import database.DbRegistry;
 import factory.DeckFactory;
@@ -47,7 +46,7 @@ public class UploadDeckPC extends HttpServlet {
 			}
 			String deckParameter = this.uploadDeckForTest();//request.getParameter("deck");
 			Deck deck = DeckFactory.createNew(IdGenerator.getInstance().createID(),1, userId, deckParameter);
-			DeckOutputMapper.insert(deck);
+			UoW.getCurrent().commit();
 			request.setAttribute("message", "Upload was done successfully");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);			
 			DbRegistry.closeConnection();

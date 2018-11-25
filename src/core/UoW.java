@@ -7,8 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import OutputMapper.ChallengeOutputMapper;
+import OutputMapper.DeckOutputMapper;
 import OutputMapper.UserOutputMapper;
+import pojo.Challenge;
+import pojo.Deck;
 import pojo.DomainObject;
+import pojo.IDeck;
 import pojo.User;
 
 public class UoW {
@@ -73,6 +78,12 @@ public class UoW {
 			DomainObject obj = (DomainObject) objects.next();
 			if(obj.getClass() == User.class) {
 				UserOutputMapper.insert((User)obj);
+			}
+			else if(obj.getClass() == Deck.class) {
+				DeckOutputMapper.insert((Deck) obj);
+			}
+			else if(obj.getClass() == Challenge.class){
+				ChallengeOutputMapper.insert((Challenge)obj);
 			}
 		}
 	}

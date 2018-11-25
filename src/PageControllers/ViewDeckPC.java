@@ -2,6 +2,7 @@ package PageControllers;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import InputMapper.DeckInputMapper;
 import core.UoW;
 import database.DbRegistry;
-import pojo.Deck;
+import pojo.IDeck;
 
 
 /**
@@ -39,12 +40,14 @@ public class ViewDeckPC extends HttpServlet {
 		UoW.newUoW();
 		try {
 			myId = (Long)request.getSession().getAttribute("userid");
-			Deck deck = DeckInputMapper.findByOwner(myId);
-			if(deck == null) {
+			List<IDeck> decks = DeckInputMapper.findAllByOwner(myId);
+			if(decks.isEmpty()) {
+				getServletContext().log("deck is empty");
 				throw new Exception("You have no deck");
 			}
-			request.setAttribute("deck", deck);
+			request.setAttribute("decks", decks);
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/deck.jsp").forward(request, response);
+			DbRegistry.closeConnection();
 		}
 		catch(NullPointerException e) {
 			e.getStackTrace();
@@ -64,29 +67,6 @@ public class ViewDeckPC extends HttpServlet {
 			request.setAttribute("message", e.getMessage());
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
-		//////////////////////////////////////////////////////////////////////////////
-//		try{
-//			myId = (Long)request.getSession().getAttribute("userid");
-//		} catch(NullPointerException e){
-//			request.setAttribute("message", "Need to log in.");
-//			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-//		}
-//		DeckRDG deck = null;
-//		try {
-//			deck = DeckRDG.findByPlayer(myId);
-//		} catch (Exception e) {
-//			request.setAttribute("message", e.getMessage());
-//			if(!response.isCommitted())
-//			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-//		}
-//		if(deck == null){
-//			request.setAttribute("message", "You have no deck");
-//			if(!response.isCommitted())
-//			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-//		}
-//		request.setAttribute("deck", deck);
-//		if(!response.isCommitted())
-//		getServletContext().getRequestDispatcher("/WEB-INF/jsp/deck.jsp").forward(request, response);
 	}
 
 	/**
