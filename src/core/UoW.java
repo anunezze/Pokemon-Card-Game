@@ -9,12 +9,17 @@ import java.util.Map;
 
 import OutputMapper.ChallengeOutputMapper;
 import OutputMapper.DeckOutputMapper;
+import OutputMapper.GameOutputMapper;
+import OutputMapper.HandOutputMapper;
 import OutputMapper.UserOutputMapper;
 import pojo.Challenge;
 import pojo.Deck;
 import pojo.DomainObject;
+import pojo.Game;
+import pojo.Hand;
 import pojo.IDeck;
 import pojo.User;
+import util.LostUpdateException;
 
 public class UoW {
 	
@@ -22,7 +27,6 @@ public class UoW {
 	private List<DomainObject> dirtyObjects = new ArrayList<DomainObject>(); 
 	private List<DomainObject> deletedObjects = new ArrayList<DomainObject>();
 	
-	private Map mapperDictionary = new HashMap();
 	private static ThreadLocal<UoW> current = new ThreadLocal<UoW>();
 	
 	private UoW() {
@@ -59,7 +63,7 @@ public class UoW {
 		}
 	}
 	
-	public void commit() throws SQLException {
+	public void commit() throws SQLException, LostUpdateException {
 		insertNew();
 		updateDirty();
 		deleteDeleted();
@@ -85,9 +89,21 @@ public class UoW {
 			else if(obj.getClass() == Challenge.class){
 				ChallengeOutputMapper.insert((Challenge)obj);
 			}
+			else if(obj.getClass() == Game.class) {
+				GameOutputMapper.insert((Game) obj);
+			}
+			else if(obj.getClass() == Hand.class) {
+				HandOutputMapper.insert((Hand)obj);
+			}
 		}
 	}
-	private void updateDirty() {
+	private void updateDirty() throws SQLException, LostUpdateException {
+		for(Iterator objects = dirtyObjects.iterator(); objects.hasNext();) {
+			DomainObject obj = (DomainObject) objects.next();
+			if(obj.getClass() == Challenge.class) {
+				ChallengeOutputMapper.update((Challenge) obj);
+			}
+		}
 		
 	}
 	private void deleteDeleted() {

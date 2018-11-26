@@ -17,6 +17,7 @@ public abstract class DomainObject {
 
 	public void setVersion(int version) {
 		this.version = version;
+		this.markDirty();
 	}
 
 	public long getId() {
