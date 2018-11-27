@@ -10,9 +10,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import InputMapper.GameInputMapper;
+import InputMapper.HandInputMapper;
+import core.UoW;
 import database.DbRegistry;
-import rdg.GameRDG;
-import rdg.HandRDG;
+import pojo.Game;
+import pojo.Hand;
 
 /**
  * Servlet implementation class DrawCardPC
@@ -34,49 +37,49 @@ public class DrawCardPC extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			long myId = -1;
-			try{
-				myId = (Long)request.getSession().getAttribute("userid"); 
-			}
-			catch(NullPointerException e) {
-				request.setAttribute("message", "Need to log in.");
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-				return;
-			}
-			long gameId = -1;
+			DbRegistry.newConnection();
+			UoW.newUoW();
+			long myId = (Long)request.getSession().getAttribute("userid"); 
 			
-			try{
-				gameId = Long.parseLong(request.getParameter("game"));
-			}
-			catch(NumberFormatException e) {
-				request.setAttribute("message", "Please provide a game");
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-				return;
-			}
-			
-			GameRDG game = GameRDG.find(gameId);
+			long gameId = Long.parseLong(request.getParameter("game"));
+						
+			Game game = GameInputMapper.findById(gameId);
 			if(myId != game.getPlayer1() && myId != game.getPlayer2()) {
-				request.setAttribute("message", "This is not your game");
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-				return;
+				throw new Exception("This is not your game");
 			}
-			HandRDG hand = HandRDG.find(game.getId(), myId);
+			Hand hand = HandInputMapper.find(game.getId(), myId);
 			hand.setDeckSize(hand.getDeckSize()-1);
 			hand.setHandSize(hand.getHandSize() + 1);
-			hand.update();
 			
 			request.setAttribute("message", "User '" + myId + "' draw a card.");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
+			UoW.getCurrent().commit();
+			DbRegistry.closeConnection();
 		}
 		catch(SQLException e) {
 			e.printStackTrace();
 			request.setAttribute("message", "SQL error");
-			Connection connection = new DbRegistry().getConnection();
-			try {
-				connection.close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
+			DbRegistry.closeConnection();
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		catch(NullPointerException e) {
+			e.printStackTrace();
+			request.setAttribute("message", "Need to log in.");
+			DbRegistry.closeConnection();
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			return;
+		}
+		catch(NumberFormatException e) {
+			e.printStackTrace();
+			request.setAttribute("message", "Please provide a game");
+			DbRegistry.closeConnection();
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			return;
+		}
+		catch(Exception e) {
+			e.printStackTrace();;
+			request.setAttribute("message", e.getMessage() );
+			DbRegistry.closeConnection();
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 			return;
 		}

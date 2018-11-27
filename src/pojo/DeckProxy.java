@@ -1,27 +1,26 @@
 package pojo;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import InputMapper.DeckInputMapper;
 
-public class DeckProxy extends DomainObject implements IDeck{
-	private long ownerId;
-	private List<Card> cards;
+public class DeckProxy implements IDeck{
+	private Deck deck;
 	
 	public DeckProxy(long id, int version, long ownerId) {
-		super(id, version);
-		this.ownerId = ownerId;
+		deck = new Deck(id, version, ownerId, new ArrayList<Card>());
 	}
 
 	@Override
 	public long getOwnerId() {
-		return ownerId;
+		return deck.getOwnerId();
 	}
 
 	@Override
 	public List<Card> getCards() throws SQLException, Exception {
-		return DeckInputMapper.findById(ownerId).getCards();
+		return DeckInputMapper.findById(deck.getOwnerId()).getCards();
 	}
 	
 }

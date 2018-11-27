@@ -10,8 +10,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import InputMapper.ChallengeInputMapper;
+import core.UoW;
 import database.DbRegistry;
-import rdg.ChallengeRDG;
+import pojo.Challenge;
 import util.ChallengeStatus;
 
 /**
@@ -34,54 +36,52 @@ public class RefuseChallengePC extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		long userid =-1;
 		try {
-			try{
-				userid = (Long)request.getSession(true).getAttribute("userid");
-			}
-			catch(NullPointerException e){
-				request.setAttribute("message", "Need to log in.");
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-				return;
-			}
+			DbRegistry.newConnection();
+			UoW.newUoW();
+			userid = (Long)request.getSession(true).getAttribute("userid");
+			
 			long challengeId = (Long.parseLong(request.getParameter("challenge")));
-			ChallengeRDG challenge = ChallengeRDG.find(challengeId);
+			int version = (Integer.parseInt(request.getParameter("version")));
+			Challenge challenge = ChallengeInputMapper.findById(challengeId);
 			
 			if(challenge == null){
-				request.setAttribute("message", "Challenge was not found");
-				if(!response.isCommitted())
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-				return;
+				throw new Exception("Challenge was not found");
 			}
 			
 			if(userid == challenge.getChallenger()) {
 				challenge.setStatus(ChallengeStatus.WITHDRAW);
+				request.setAttribute("message", "Challenge was withdraw.");
 			}
 			else if(userid == challenge.getChallengee()) {
 				challenge.setStatus(ChallengeStatus.REFUSED);
+				request.setAttribute("message", "Challenge was refused.");
 			}
 			else {
-				request.setAttribute("message", "This is not your challenge.");
-				if(!response.isCommitted())
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-				return;
+				throw new Exception("This is not your challenge.");
 			}
-			
-			challenge.update();
-			request.setAttribute("message", "Challenge was refused");
-			if(!response.isCommitted())
-			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
+			challenge.setVersion(version);
+			UoW.getCurrent().commit();
+			DbRegistry.closeConnection();
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);			
 		}
 		catch (SQLException e) {
+			e.printStackTrace();
 			request.setAttribute("message", "SQLException");
-			Connection connection = new DbRegistry().getConnection();
-			try {
-				connection.close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-			if(!response.isCommitted())
+			DbRegistry.closeConnection();
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
-		
+		catch(NullPointerException e){
+			e.printStackTrace();
+			DbRegistry.closeConnection();
+			request.setAttribute("message", "Need to log in.");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			DbRegistry.closeConnection();
+			request.setAttribute("message", e.getMessage());
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
 	}
 
 	/**

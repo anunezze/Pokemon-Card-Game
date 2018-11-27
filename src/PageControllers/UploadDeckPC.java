@@ -46,6 +46,12 @@ public class UploadDeckPC extends HttpServlet {
 			}
 			String deckParameter = this.uploadDeckForTest();//request.getParameter("deck");
 			Deck deck = DeckFactory.createNew(IdGenerator.getInstance().createID(),1, userId, deckParameter);
+			if(deck.getCards().size()>40){
+				throw new Exception("Too many cards in deck of user #" + deck.getOwnerId());
+			}
+			else if(deck.getCards().size()<40){
+				throw new Exception("Too few cards in deck of user #" + deck.getOwnerId());
+			}
 			UoW.getCurrent().commit();
 			request.setAttribute("message", "Upload was done successfully");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);			

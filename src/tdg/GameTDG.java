@@ -2,6 +2,7 @@ package tdg;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import database.DbRegistry;
@@ -29,5 +30,17 @@ public abstract class GameTDG {
 		ps.setString(8, p1Status);
 		ps.setString(9, p2Status);
 		ps.executeUpdate();
+	}
+	
+	public static ResultSet findAll() throws SQLException {
+		String query = "SELECT * from game;";
+		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
+		return ps.executeQuery();
+	}
+	
+	public static ResultSet find(long id) throws SQLException {
+		String query = "SELECT * from game WHERE id = ?;";
+		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
+		return ps.executeQuery();
 	}
 }

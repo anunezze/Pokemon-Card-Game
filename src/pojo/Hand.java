@@ -24,6 +24,7 @@ public class Hand extends DomainObject {
 
 	public void setHandSize(int handSize) {
 		this.handSize = handSize;
+		this.markDirty();
 	}
 
 	public int getDeckSize() {
@@ -32,6 +33,7 @@ public class Hand extends DomainObject {
 
 	public void setDeckSize(int deckSize) {
 		this.deckSize = deckSize;
+		this.markDirty();
 	}
 
 	public int getDiscardSize() {
@@ -40,6 +42,7 @@ public class Hand extends DomainObject {
 
 	public void setDiscardSize(int discardSize) {
 		this.discardSize = discardSize;
+		this.markDirty();
 	}
 
 	public long getGameId() {
@@ -52,11 +55,5 @@ public class Hand extends DomainObject {
 
 	public long getBenchId() {
 		return benchId;
-	}
-	
-	
-	
-	
-	
-	
+	}	
 }

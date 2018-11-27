@@ -12,8 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import InputMapper.ChallengeInputMapper;
+import core.UoW;
 import database.DbRegistry;
-import rdg.ChallengeRDG;
+import pojo.Challenge;
 
 /**
  * Servlet implementation class ListChallenges
@@ -35,34 +37,25 @@ public class ListChallengesPC extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			try{
-				long myId = (Long)request.getSession().getAttribute("userid");
-			} catch(NullPointerException e){
-				request.setAttribute("message", "Need to log in.");
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-				return;
-			}
-			List<ChallengeRDG> challenges = new ArrayList<ChallengeRDG>();
-			challenges = ChallengeRDG.findAllOpen();
-			if(challenges == null){
-				request.setAttribute("message", "Challenge was not found");
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-				return;
-			}
-			else{
-				request.setAttribute("challenges", challenges);
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/challenges.jsp").forward(request, response);
-				return;
-			}
+			DbRegistry.newConnection();
+			UoW.newUoW();
+			long myId = (Long)request.getSession().getAttribute("userid");
+			
+			List<Challenge> challenges = ChallengeInputMapper.findAll();
+			request.setAttribute("challenges", challenges);
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/challenges.jsp").forward(request, response);
+			DbRegistry.closeConnection();
 		}
 		catch(SQLException e) {
+			e.printStackTrace();
 			request.setAttribute("message", "SQL error");
-			Connection connection = new DbRegistry().getConnection();
-			try {
-				connection.close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
+			DbRegistry.closeConnection();
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		catch(NullPointerException e){
+			e.printStackTrace();
+			request.setAttribute("message", "Need to log in.");
+			DbRegistry.closeConnection();
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 	}

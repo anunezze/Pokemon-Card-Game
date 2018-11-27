@@ -42,4 +42,11 @@ public abstract class ChallengeTDG {
 		ps.setInt(7, version);
 		return ps.executeUpdate();
 	}
+	
+	public static ResultSet findAll() throws SQLException {
+		Connection connection = DbRegistry.getConnection();
+		String query = "SELECT * FROM challenge";
+		PreparedStatement ps = connection.prepareStatement(query);
+		return ps.executeQuery();
+	}
 }
