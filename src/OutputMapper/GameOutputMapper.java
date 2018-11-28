@@ -18,4 +18,7 @@ public abstract class GameOutputMapper {
 				g.getP1Status(),
 				g.getP2Status());
 	}
+	public static void update(Game g) throws SQLException {
+		GameTDG.update(g.getId(), g.getVersion(), g.getCurrentPlayer(), g.getP1Status(), g.getP2Status());
+	}
 }

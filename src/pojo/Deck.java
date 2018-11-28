@@ -33,6 +33,5 @@ public class Deck extends DomainObject implements IDeck, IDomainObject{
 
 	public List<Card> getCards() {
 		return cards;
-	}
-	
+	}	
 }

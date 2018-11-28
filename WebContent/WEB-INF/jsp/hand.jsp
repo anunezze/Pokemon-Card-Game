@@ -2,7 +2,7 @@
 {
 	"hand":[
 	<c:forEach var="card" items="${cards}">
-		card.id,
+		${card.id},
 	</c:forEach>
 	]
 }

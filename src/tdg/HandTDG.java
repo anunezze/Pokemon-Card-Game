@@ -16,8 +16,9 @@ public abstract class HandTDG {
 			int handSize, 
 			int deckSize, 
 			int discardSize, 
-			long benchId) throws SQLException {
-		String query = "INSERT INTO hand (id,version,game_id,player_id, hand_size, deck_size, discard_size, bench_id) VALUES (?,?,?,?,?,?,?,?);";
+			long benchId,
+			int benchSize) throws SQLException {
+		String query = "INSERT INTO hand (id,version,game_id,player_id, hand_size, deck_size, discard_size, bench_id,bench_size) VALUES (?,?,?,?,?,?,?,?,?);";
 		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
 		ps.setLong(1,IdGenerator.getInstance().createID());
 		ps.setInt(2, version);
@@ -27,6 +28,7 @@ public abstract class HandTDG {
 		ps.setInt(6, deckSize);
 		ps.setInt(7, discardSize);
 		ps.setLong(8, benchId);
+		ps.setInt(9, benchSize);
 		ps.executeUpdate();
 	}
 	
@@ -38,15 +40,16 @@ public abstract class HandTDG {
 		return ps.executeQuery();
 	}
 	
-	public static int update(long id, int version, int handSize, int deckSize, int discardSize) throws SQLException {
-		String query = "UPDATE hand SET version=?, hand_size=?,deck_size=?, discard_size=? WHERE id=? AND version=?;";
+	public static int update(long id, int version, int handSize, int deckSize, int discardSize, int benchSize) throws SQLException {
+		String query = "UPDATE hand SET version=?, hand_size=?,deck_size=?, discard_size=?, bench_size =? WHERE id=? AND version=?;";
 		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
 		ps.setInt(1, version + 1);
 		ps.setInt(2, handSize);
 		ps.setInt(3, deckSize);
 		ps.setInt(4, discardSize);
-		ps.setLong(5, id);
-		ps.setInt(6, version);
+		ps.setInt(5, benchSize);
+		ps.setLong(6, id);
+		ps.setInt(7, version);
 		return ps.executeUpdate();
 	}
 }

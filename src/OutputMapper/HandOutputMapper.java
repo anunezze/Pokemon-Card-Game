@@ -14,9 +14,10 @@ public abstract class HandOutputMapper {
 				h.getHandSize(),
 				h.getDeckSize(),
 				h.getDiscardSize(),
-				h.getBenchId());
+				h.getBenchId(),
+				h.getBenchSize());
 	}
 	public static void update(Hand h) throws SQLException{
-		HandTDG.update(h.getId(), h.getVersion(), h.getHandSize(), h.getDeckSize(), h.getDiscardSize());
+		HandTDG.update(h.getId(), h.getVersion(), h.getHandSize(), h.getDeckSize(), h.getDiscardSize(),h.getBenchSize());
 	}
 }

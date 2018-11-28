@@ -12,11 +12,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import InputMapper.BenchPokemonInputMapper;
+import InputMapper.DeckInputMapper;
+import InputMapper.GameInputMapper;
+import InputMapper.HandInputMapper;
+import core.UoW;
 import database.DbRegistry;
+import pojo.BenchPokemon;
 import pojo.Card;
-import rdg.DeckRDG;
-import rdg.GameRDG;
-import rdg.HandRDG;
+import pojo.Deck;
+import pojo.Game;
+import pojo.Hand;
 
 /**
  * Servlet implementation class ViewHandPC
@@ -38,45 +44,52 @@ public class ViewHandPC extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			long myId = -1;
-			try{
-				myId = (Long)request.getSession().getAttribute("userid"); 
+			DbRegistry.newConnection();
+			UoW.newUoW();
+			long myId = (Long)request.getSession().getAttribute("userid"); 
+			long gameId = Long.parseLong(request.getParameter("game"));
+			Game game = GameInputMapper.findById(gameId);
+			
+			Hand hand = HandInputMapper.find(game.getId(), myId);
+			Deck deck = null;
+			if(myId == game.getPlayer1()) {
+				deck = DeckInputMapper.findById(game.getDeck1());
+			} else if(myId == game.getPlayer2()) {
+				deck = DeckInputMapper.findById(game.getDeck2());
+			} else {
+				throw new Exception("Not your game");
 			}
-			catch(NullPointerException e) {
-				request.setAttribute("message", "Need to log in.");
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-				return;
-			}
-			long gameId = -1;
-			gameId = Long.parseLong(request.getParameter("game"));
-			GameRDG game = GameRDG.find(gameId);
-			if(myId != game.getPlayer1() && myId != game.getPlayer2()) {
-				request.setAttribute("message", "Not your game.");
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-				return;
-			}
-			HandRDG hand = HandRDG.find(game.getId(), myId);
-			DeckRDG deck;
-			try {
-				deck = DeckRDG.findByPlayer(myId);
-			} catch (Exception e) {
-				request.setAttribute("message", e.getMessage());
-				getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-				return;
-			}
-			List<Card> cardsInHand = this.getCurrentHand(deck, hand);
+			List<BenchPokemon> bench = BenchPokemonInputMapper.findAllByHandId(hand.getId());
+			request.getServletContext().log(bench.size() + " is my size");
+			List<Card> cardsInHand = hand.getCurrentHand(deck,bench);
 			request.setAttribute("cards", cardsInHand);
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/hand.jsp").forward(request, response);
-			
+			DbRegistry.closeConnection();
 		}
 		catch(SQLException e) {
-			Connection connection = new DbRegistry().getConnection();
-			try {
-				connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			e.printStackTrace();
+			DbRegistry.closeConnection();
+			request.setAttribute("message", "SQL error");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+			
+		}
+		catch(NumberFormatException e) {
+			e.printStackTrace();
+			DbRegistry.closeConnection();
+			request.setAttribute("message", "No version specified");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		catch(NullPointerException e) {
+			e.printStackTrace();
+			DbRegistry.closeConnection();
+			request.setAttribute("message", "Need to log in.");
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			DbRegistry.closeConnection();
+			request.setAttribute("message", e.getMessage());
+			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
 		}
 	}
 
@@ -86,15 +99,5 @@ public class ViewHandPC extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
-	}
-	
-	private List<Card> getCurrentHand(DeckRDG deck, HandRDG hand){
-		List<Card> currentHand = new ArrayList<Card>();
-		int skip = hand.getDiscardSize();
-		for(int i = skip; i < skip + hand.getHandSize(); i++) {
-			currentHand.add(deck.getCards().get(i));
-		}
-		
-		return currentHand;
 	}
 }

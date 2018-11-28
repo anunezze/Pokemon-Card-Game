@@ -41,6 +41,19 @@ public abstract class GameTDG {
 	public static ResultSet find(long id) throws SQLException {
 		String query = "SELECT * from game WHERE id = ?;";
 		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
+		ps.setLong(1, id);
 		return ps.executeQuery();
+	}
+	
+	public static int update(long id, int version, long currentPlayer, String p1Status, String p2Status) throws SQLException {
+		String query = "UPDATE game SET version=?, current_player=?, p1_status=?, p2_status=? WHERE id=? AND version=?;";
+		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
+		ps.setInt(1, version + 1);
+		ps.setLong(2, currentPlayer);
+		ps.setString(3, p1Status);
+		ps.setString(4, p2Status);
+		ps.setLong(5, id);
+		ps.setInt(6, version);
+		return ps.executeUpdate();
 	}
 }

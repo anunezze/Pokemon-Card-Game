@@ -38,7 +38,7 @@ public class ChallengePlayerPC extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			DbRegistry.newConnection();
+			DbRegistry.newConnection(); 
 			UoW.newUoW();
 			long challengeeID = Long.parseLong(request.getParameter("player"));
 			long myId = (Long)request.getSession().getAttribute("userid");

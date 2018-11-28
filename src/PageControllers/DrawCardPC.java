@@ -53,6 +53,7 @@ public class DrawCardPC extends HttpServlet {
 			
 			request.setAttribute("message", "User '" + myId + "' draw a card.");
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/success.jsp").forward(request, response);
+			game.markDirty();
 			UoW.getCurrent().commit();
 			DbRegistry.closeConnection();
 		}

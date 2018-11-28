@@ -7,11 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import OutputMapper.BenchPokemonOutputMapper;
 import OutputMapper.ChallengeOutputMapper;
 import OutputMapper.DeckOutputMapper;
 import OutputMapper.GameOutputMapper;
 import OutputMapper.HandOutputMapper;
 import OutputMapper.UserOutputMapper;
+import pojo.BenchPokemon;
 import pojo.Challenge;
 import pojo.Deck;
 import pojo.DomainObject;
@@ -23,18 +25,28 @@ import util.LostUpdateException;
 
 public class UoW {
 	
-	private List<DomainObject> newObjects = new ArrayList<DomainObject>();
-	private List<DomainObject> dirtyObjects = new ArrayList<DomainObject>(); 
-	private List<DomainObject> deletedObjects = new ArrayList<DomainObject>();
+	private List<DomainObject> newObjects;
+	private List<DomainObject> dirtyObjects; 
+	private List<DomainObject> deletedObjects ;
+	private Map<Long, DomainObject> cleanObjects;
 	
 	private static ThreadLocal<UoW> current = new ThreadLocal<UoW>();
 	
 	private UoW() {
-		
+		this.newObjects = new ArrayList<DomainObject>();
+		this.dirtyObjects  = new ArrayList<DomainObject>();
+		this.deletedObjects= new ArrayList<DomainObject>();
+		this.cleanObjects = new HashMap<Long, DomainObject>();
 	}
 	
 	public void registerClean(DomainObject obj) {
-		
+		if(!cleanObjects.containsKey(obj.getId())) {
+			cleanObjects.put(obj.getId(), obj);
+		}
+	}
+	
+	public Map<Long, DomainObject> getCleanObjects(){
+		return this.cleanObjects;
 	}
 	
 	public void registerDirty(DomainObject obj) {
@@ -95,6 +107,9 @@ public class UoW {
 			else if(obj.getClass() == Hand.class) {
 				HandOutputMapper.insert((Hand)obj);
 			}
+			else if(obj.getClass() == BenchPokemon.class) {
+				BenchPokemonOutputMapper.insert((BenchPokemon)obj);
+			}
 		}
 	}
 	private void updateDirty() throws SQLException, LostUpdateException {
@@ -103,11 +118,16 @@ public class UoW {
 			if(obj.getClass() == Challenge.class) {
 				ChallengeOutputMapper.update((Challenge) obj);
 			}
+			else if(obj.getClass() == Hand.class) {
+				HandOutputMapper.update((Hand)obj);
+			}
+			else if(obj.getClass() == Game.class) {
+				GameOutputMapper.update((Game)obj);
+			}
 		}
 		
 	}
 	private void deleteDeleted() {
 		
 	}
-	
 }
