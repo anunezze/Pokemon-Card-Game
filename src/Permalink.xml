@@ -1,14 +1,15 @@
 <permalinks>
     <Permalink>
         <pattern>Poke/Player/Register</pattern>
+        <dispatcher>dispatcher.RegisterDispatcher</dispatcher>
     </Permalink>
     <Permalink>
         <pattern>Poke/Player/Login</pattern>
-        <dispatcher>org.soen387.app.dispatcher.user.Login</dispatcher>
+        <dispatcher>dispatcher.LoginDispatcher</dispatcher>
     </Permalink>
     <Permalink>
         <pattern>Poke/Player/Logout</pattern>
-        <dispatcher>org.soen387.app.dispatcher.user.Logout</dispatcher>
+        <dispatcher>dispatcher.LogoutDispatcher</dispatcher>
     </Permalink>
     <Permalink>
         <pattern>Poke/Deck</pattern>

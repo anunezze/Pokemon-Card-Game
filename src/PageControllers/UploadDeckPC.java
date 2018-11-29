@@ -33,17 +33,14 @@ public class UploadDeckPC extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		long userId = -1;
+		
 		
 		try {
 			DbRegistry.newConnection();
 			UoW.newUoW();
-			try{
-				userId = (Long)request.getSession(true).getAttribute("userid");
-			}
-			catch(NullPointerException e){
-				throw new Exception("Can't upload a deck if not logged in.");
-			}
+			
+			long userId = (Long)request.getSession(true).getAttribute("userid");
+			
 			String deckParameter = this.uploadDeckForTest();//request.getParameter("deck");
 			Deck deck = DeckFactory.createNew(IdGenerator.getInstance().createID(),1, userId, deckParameter);
 			if(deck.getCards().size()>40){
@@ -62,6 +59,9 @@ public class UploadDeckPC extends HttpServlet {
 			request.setAttribute("message", "SQL error");
 			DbRegistry.closeConnection();
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		catch(NullPointerException e){
+			throw new Exception("Can't upload a deck if not logged in.");
 		}
 		catch(Exception e) {
 			request.setAttribute("message", e.getMessage());

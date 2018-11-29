@@ -11,17 +11,17 @@ import javax.servlet.annotation.WebFilter;
 
 import org.dsrg.soenea.application.filter.PermalinkFilter;
 
-//@WebFilter( 
-//		urlPatterns="/Poke/*",
-//		dispatcherTypes={DispatcherType.REQUEST}
-//)
-public class PokeFilter /*extends PermalinkFilter*/ { 
+@WebFilter( 
+		urlPatterns="/Poke/*",
+		dispatcherTypes={DispatcherType.REQUEST}
+)
+public class PokeFilter extends PermalinkFilter {
 
-//	@Override
-//	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-//			throws IOException, ServletException {
-//		
-//		super.doFilter(request, response, chain);
-//		request.getServletContext().getRequestDispatcher("/AppFC").include(request, response);
-//	}
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		
+		super.doFilter(request, response, chain);
+		request.getServletContext().getRequestDispatcher("/AppFC").include(request, response);
+	}
 }

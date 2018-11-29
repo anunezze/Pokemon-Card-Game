@@ -38,6 +38,7 @@ public class RegisterPC extends HttpServlet{
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.getServletContext().log("register pc bad");
 		String user = request.getParameter("user");
 		String password = request.getParameter("pass");
 		try {

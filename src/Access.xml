@@ -1,0 +1,9 @@
+<roles>
+<role name="org.dsrg.soenea.domain.role.impl.GuestRole">
+ <command name="dispatcher.LoginDispatcher" post="true" />
+ <command name="dispatcher.RegisterDispatcher" post="true" />
+</role> 
+<role name="org.soen387.dom.model.role.RegisteredRole">
+<command name="org.soen387.app.dispatcher.user.Logout" post="true" get="true" />
+</role> 
+</roles>

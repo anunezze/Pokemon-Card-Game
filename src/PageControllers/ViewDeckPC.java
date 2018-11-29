@@ -35,10 +35,11 @@ public class ViewDeckPC extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		long myId = -1;
+		
 		DbRegistry.newConnection();
 		UoW.newUoW();
 		try {
+			long myId = -1;
 			myId = (Long)request.getSession().getAttribute("userid");
 			List<IDeck> decks = DeckInputMapper.findAllByOwner(myId);
 			if(decks.isEmpty()) {
