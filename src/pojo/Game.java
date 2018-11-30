@@ -27,6 +27,7 @@ public class Game extends DomainObject{
 
 	public void setCurrentPlayer(long currentPlayer) {
 		this.currentPlayer = currentPlayer;
+		this.markDirty();
 	}
 
 	public String getP1Status() {
@@ -35,6 +36,7 @@ public class Game extends DomainObject{
 
 	public void setP1Status(String p1Status) {
 		this.p1Status = p1Status;
+		this.markDirty();
 	}
 
 	public String getP2Status() {
@@ -43,6 +45,7 @@ public class Game extends DomainObject{
 
 	public void setP2Status(String p2Status) {
 		this.p2Status = p2Status;
+		this.markDirty();
 	}
 
 	public long getPlayer1() {

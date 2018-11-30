@@ -60,7 +60,6 @@ public class ViewHandPC extends HttpServlet {
 				throw new Exception("Not your game");
 			}
 			List<BenchPokemon> bench = BenchPokemonInputMapper.findAllByHandId(hand.getId());
-			request.getServletContext().log(bench.size() + " is my size");
 			List<Card> cardsInHand = hand.getCurrentHand(deck,bench);
 			request.setAttribute("cards", cardsInHand);
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/hand.jsp").forward(request, response);

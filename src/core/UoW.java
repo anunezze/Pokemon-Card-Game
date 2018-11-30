@@ -10,12 +10,14 @@ import java.util.Map;
 import OutputMapper.BenchPokemonOutputMapper;
 import OutputMapper.ChallengeOutputMapper;
 import OutputMapper.DeckOutputMapper;
+import OutputMapper.DiscardCardOuputMapper;
 import OutputMapper.GameOutputMapper;
 import OutputMapper.HandOutputMapper;
 import OutputMapper.UserOutputMapper;
 import pojo.BenchPokemon;
 import pojo.Challenge;
 import pojo.Deck;
+import pojo.DiscardCard;
 import pojo.DomainObject;
 import pojo.Game;
 import pojo.Hand;
@@ -47,6 +49,10 @@ public class UoW {
 	
 	public Map<Long, DomainObject> getCleanObjects(){
 		return this.cleanObjects;
+	}
+	
+	public List<DomainObject> getNewObjects(){
+		return this.newObjects;
 	}
 	
 	public void registerDirty(DomainObject obj) {
@@ -109,6 +115,9 @@ public class UoW {
 			}
 			else if(obj.getClass() == BenchPokemon.class) {
 				BenchPokemonOutputMapper.insert((BenchPokemon)obj);
+			}
+			else if(obj.getClass() == DiscardCard.class) {
+				DiscardCardOuputMapper.insert((DiscardCard)obj);
 			}
 		}
 	}

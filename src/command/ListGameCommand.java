@@ -6,19 +6,17 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import InputMapper.DeckInputMapper;
-import database.DbRegistry;
-import pojo.IDeck;
+import InputMapper.GameInputMapper;
+import pojo.Game;
 
-public class ViewDeckCommand implements ICommand {
+public class ListGameCommand implements ICommand {
 
 	@Override
 	public void processRequest(HttpServletRequest request, HttpServletResponse response)
 			throws SQLException, Exception {
-		long myId = (Long)request.getSession().getAttribute("userid");
-		List<IDeck> decks = DeckInputMapper.findAllByOwner(myId);
-
-		request.setAttribute("decks", decks);
+		long userid = (Long)request.getSession(true).getAttribute("userid");
+		List<Game> games = GameInputMapper.findAll();
+		request.setAttribute("games", games);
 	}
 
 }

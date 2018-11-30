@@ -5,7 +5,7 @@
 		<c:forEach var="g" items="${games}">
 		{
 			"id":${g.id}, 
-			"version":${g.version} }
+			"version":${g.version}
 			"players":[${g.player1},${g.player2}]
 		},
 		</c:forEach>

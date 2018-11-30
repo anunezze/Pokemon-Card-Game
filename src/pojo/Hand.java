@@ -70,35 +70,36 @@ public class Hand extends DomainObject {
 		this.benchSize = benchSize;
 	}
 
-	public List<Card> getCurrentHand(Deck deck, List<BenchPokemon> benchCards){
+	public List<Card> getCurrentHand(Deck deck, List<BenchPokemon> benchCards, List<DiscardCard> discardPile){
 		List<Card> currentHand = new ArrayList<Card>();
 		int counter = 0;
-		boolean foundInBench = false;
+		boolean found = false;
 		while(currentHand.size() < this.handSize && counter < 40) {
-			System.out.println(currentHand.size() + " < " + this.handSize + "is true");
 			long currentCardId = deck.getCards().get(counter).getId();
-			for(int i = 0; !foundInBench && i < benchCards.size(); i++) {
-				System.out.println(currentCardId + " current id card");
+			for(int i = 0; !found && i < benchCards.size(); i++) {
 				BenchPokemon benchItem = benchCards.get(i);
 				System.out.println(benchItem.getPokemonId() + " benchItem pokemon id");
 				if(currentCardId == benchItem.getPokemonId()) {
 					System.out.println("set to true first");
-					foundInBench = true;
+					found = true;
 				}
-				for(int j = 0; !foundInBench && j < benchItem.getEnergies().size(); j++) {
+				for(int j = 0; !found && j < benchItem.getEnergies().size(); j++) {
 					long energyId = benchItem.getEnergies().get(j);
 					if(currentCardId == energyId) {
 						System.out.println("set to true second");
-						foundInBench = true;
+						found = true;
 					}
 				}
 			}
-			if(!foundInBench) {
-				System.out.println("added " + deck.getCards().get(counter).getId());
-				currentHand.add(deck.getCards().get(counter));
-				
+			for(int i = 0; !found && i < discardPile.size(); i++) {
+				if(currentCardId == discardPile.get(i).getCardId()){
+					found = true;
+				}
 			}
-			foundInBench = false;
+			if(!found) {
+				currentHand.add(deck.getCards().get(counter));
+			}
+			found = false;
 			counter++;
 		}
 		

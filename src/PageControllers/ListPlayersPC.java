@@ -38,13 +38,8 @@ public class ListPlayersPC extends HttpServlet {
 		try {
 			DbRegistry.newConnection();
 			UoW.newUoW();
-			try{
-				long userId = (Long)request.getSession(true).getAttribute("userid");
-			}
-			catch(NullPointerException e){
-				throw new Exception("Need to log in.");
-			}
 			
+			long userId = (Long)request.getSession(true).getAttribute("userid");
 			List<User> players = new ArrayList<User>();
 			players = UserInputMapper.findAll();
 			
@@ -58,6 +53,9 @@ public class ListPlayersPC extends HttpServlet {
 			request.setAttribute("message", "SQL error");
 			DbRegistry.closeConnection();
 			getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
+		}
+		catch(NullPointerException e){
+			throw new Exception("Need to log in.");
 		}
 		catch(Exception e) {
 			request.setAttribute("message", e.getMessage());

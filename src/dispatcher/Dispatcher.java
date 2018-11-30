@@ -10,9 +10,9 @@ public abstract class Dispatcher {
 	protected HttpServletRequest request;
 	protected HttpServletResponse response;	
 	
-	public Dispatcher(HttpServletRequest myRequest, HttpServletResponse myResponse) {
-		this.request = myRequest;
-		this.response = myResponse;
+	public Dispatcher(HttpServletRequest request, HttpServletResponse response) {
+		this.request = request;
+		this.response = response;
 	}
 	
 	public abstract void execute() throws ServletException, IOException;
