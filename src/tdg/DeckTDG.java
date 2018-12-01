@@ -20,18 +20,18 @@ public abstract class DeckTDG {
 		ps.executeUpdate();
 	}
 	
-	public static ResultSet findAllByOwner(long ownerId) throws SQLException {
-		String query = "SELECT DISTINCT id, version, owner_id FROM deck WHERE owner_id =?";
-		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
-		ps.setLong(1, ownerId);
-				
-		return ps.executeQuery();
-	}
-	public static ResultSet findDeckById(long findId) throws SQLException {
-		String query = "SELECT * FROM deck WHERE id =? ORDER BY card_id";
-		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
-		ps.setLong(1, findId);
-				
-		return ps.executeQuery();
-	}
+//	public static ResultSet findAllByOwner(long ownerId) throws SQLException {
+//		String query = "SELECT DISTINCT id, version, owner_id FROM deck WHERE owner_id =?";
+//		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
+//		ps.setLong(1, ownerId);
+//				
+//		return ps.executeQuery();
+//	}
+//	public static ResultSet findDeckById(long findId) throws SQLException {
+//		String query = "SELECT * FROM deck WHERE id =? ORDER BY card_id";
+//		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
+//		ps.setLong(1, findId);
+//				
+//		return ps.executeQuery();
+//	}
 }

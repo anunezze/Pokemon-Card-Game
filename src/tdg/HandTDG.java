@@ -32,13 +32,13 @@ public abstract class HandTDG {
 		ps.executeUpdate();
 	}
 	
-	public static ResultSet find(long gameId, long playerId) throws SQLException {
-		String query = "SELECT * FROM hand WHERE game_id = ? AND player_id=?;";
-		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
-		ps.setLong(1, gameId);
-		ps.setLong(2, playerId);
-		return ps.executeQuery();
-	}
+//	public static ResultSet find(long gameId, long playerId) throws SQLException {
+//		String query = "SELECT * FROM hand WHERE game_id = ? AND player_id=?;";
+//		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
+//		ps.setLong(1, gameId);
+//		ps.setLong(2, playerId);
+//		return ps.executeQuery();
+//	}
 	
 	public static int update(long id, int version, int handSize, int deckSize, int discardSize, int benchSize) throws SQLException {
 		String query = "UPDATE hand SET version=?, hand_size=?,deck_size=?, discard_size=?, bench_size =? WHERE id=? AND version=?;";

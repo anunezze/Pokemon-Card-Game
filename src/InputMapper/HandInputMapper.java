@@ -4,13 +4,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import factory.HandFactory;
+import finder.HandFinder;
 import pojo.Hand;
 import tdg.HandTDG;
 
 public abstract class HandInputMapper {
 	public static Hand find(long gameId, long playerId) throws SQLException {
 		
-		ResultSet rs = HandTDG.find(gameId, playerId);
+		ResultSet rs = HandFinder.find(gameId, playerId);
 		Hand h = null;
 		if(rs.next()) {
 			h= HandFactory.createClean(

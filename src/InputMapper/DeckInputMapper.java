@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import factory.DeckFactory;
+import finder.DeckFinder;
 import pojo.Card;
 import pojo.Deck;
 import pojo.DeckProxy;
 import pojo.IDeck;
-import tdg.DeckTDG;
 
 public abstract class DeckInputMapper {
 	public static List<IDeck> findAllByOwner(long ownerId) throws SQLException, Exception {
-		ResultSet rs = DeckTDG.findAllByOwner(ownerId);
+		ResultSet rs = DeckFinder.findAllByOwner(ownerId);
 		List<IDeck> result = new ArrayList<IDeck>();
 		while(rs.next()) {
 			result.add(new DeckProxy(rs.getInt("id"),rs.getInt("version"),ownerId));
@@ -24,7 +24,7 @@ public abstract class DeckInputMapper {
 	}
 	
 	public static Deck findById(long id) throws SQLException, Exception{
-		ResultSet rs = DeckTDG.findDeckById(id);
+		ResultSet rs = DeckFinder.findDeckById(id);
 		Deck result = null;
 		List<Card> cards = new ArrayList<Card>();
 		long deckId = -1;
@@ -44,5 +44,19 @@ public abstract class DeckInputMapper {
 		}
 		
 		return result;
+	}
+	
+	public static Card findCardById(long id) throws SQLException {
+		ResultSet rs = DeckFinder.findCard(id);
+		Card c = null;
+		if(rs.next()) {
+			c = new Card(
+					rs.getLong("card_id"),
+					rs.getString("card_type").charAt(0),
+					rs.getString("card_name"),
+					rs.getString("base"));
+					
+		}
+		return c;
 	}
 }

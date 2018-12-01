@@ -14,6 +14,7 @@ import InputMapper.GameInputMapper;
 import InputMapper.HandInputMapper;
 import factory.BenchPokemonFactory;
 import factory.DiscardCardFactory;
+import finder.DeckFinder;
 import pojo.BenchPokemon;
 import pojo.Card;
 import pojo.Deck;
@@ -63,7 +64,8 @@ public class PlayPokemonToBenchCommand implements ICommand {
 			this.playPokemonToBench(hand, cardId, myId);
 		}
 		else if(card.getType() == 'p' && card.getBase() != null) {
-			this.playEvolvePokemon();
+			long basicId = Long.parseLong(request.getParameter("basic"));
+			this.playEvolvePokemon(card,basicId, bench,hand);
 		}
 		else if(card.getType() == 'e') {
 			long pokemonId = Long.parseLong(request.getParameter("pokemon"));
@@ -80,16 +82,29 @@ public class PlayPokemonToBenchCommand implements ICommand {
 		BenchPokemon pokemonBench = BenchPokemonFactory.createNew(hand.getId(), cardId, new ArrayList<Long>());
 		hand.setBenchSize(hand.getBenchSize() + 1);
 		hand.setHandSize(hand.getHandSize() - 1);
-		
 	}
 	private void playTrainer(long gameId, long playerId, long cardId,Hand hand) {
 		DiscardCardFactory.createNew(gameId, playerId, cardId);
 		hand.setDiscardSize(hand.getDiscardSize()+1);
-		hand.setHandSize(hand.getHandSize() -1);
+		hand.setHandSize(hand.getHandSize() - 1);
 	}
-	private void playEvolvePokemon() {
-		
+	
+	private void playEvolvePokemon(Card cardToPlay, long basicId, List<BenchPokemon> bench, Hand hand) throws Exception {
+		boolean found = false;
+		Card basicCard = DeckInputMapper.findCardById(basicId);
+		for(int i = 0; i < bench.size() && !found; i++) {
+			if(bench.get(i).getPokemonId() == basicCard.getId() && cardToPlay.getBase().equals(basicCard.getName())) {
+				found = true;
+				bench.get(i).setBase(bench.get(i).getPokemonId());
+				bench.get(i).setPokemonId(basicId);
+			}
+		}
+		if(!found) {
+			throw new Exception("pokemon #" + basicId + " was not found in bench or cannot evolve that pokemon");
+		}
+		hand.setBenchSize(hand.getBenchSize() + 1);
 	}
+	
 	private void playEnergy(long pokemonId, List<BenchPokemon> bench, long cardId, Hand hand,HttpServletRequest request) throws Exception {
 		BenchPokemon bp = null;
 		for(int i = 0; i<bench.size() && bp == null; i++) {

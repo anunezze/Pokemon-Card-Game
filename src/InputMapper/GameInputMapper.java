@@ -7,12 +7,13 @@ import java.util.List;
 
 import core.IdentityMap;
 import factory.GameFactory;
+import finder.GameFinder;
 import pojo.Game;
 import tdg.GameTDG;
 
 public abstract class GameInputMapper {
 	public static List<Game> findAll() throws SQLException{
-		ResultSet rs = GameTDG.findAll();
+		ResultSet rs = GameFinder.findAll();
 		List<Game> result = new ArrayList<Game>();
 		while(rs.next()) {
 			result.add(GameFactory.createClean(
@@ -35,7 +36,7 @@ public abstract class GameInputMapper {
 		if(IdentityMap.contains(id)) {
 			return (Game)IdentityMap.find(id);
 		}
-		ResultSet rs = GameTDG.find(id);
+		ResultSet rs = GameFinder.find(id);
 		if(rs.next()) {
 			g = GameFactory.createClean(
 					rs.getInt("id"), 

@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import factory.ChallengeFactory;
+import finder.ChallengeFinder;
 import pojo.Challenge;
-import tdg.ChallengeTDG;
 import util.ChallengeStatus;
 
 public abstract class ChallengeInputMapper {
 	public static Challenge findById(long id) throws SQLException {
-		ResultSet rs = ChallengeTDG.find(id);
+		ResultSet rs = ChallengeFinder.find(id);
 		Challenge c = null;
 		if(rs.next()) {
 			c = ChallengeFactory.createClean(
@@ -26,7 +26,7 @@ public abstract class ChallengeInputMapper {
 		return c;
 	}
 	public static List<Challenge> findAll() throws SQLException{
-		ResultSet rs = ChallengeTDG.findAll();
+		ResultSet rs = ChallengeFinder.findAll();
 		List<Challenge> result = new ArrayList<Challenge>();
 		while(rs.next()) {
 			result.add(ChallengeFactory.createClean(

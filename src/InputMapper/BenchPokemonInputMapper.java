@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import factory.BenchPokemonFactory;
+import finder.BenchFinder;
 import pojo.BenchPokemon;
-import tdg.BenchTDG;
 import tdg.PokemonEnergyTDG;
 
 public abstract class BenchPokemonInputMapper {
 	public static BenchPokemon find(long id) throws SQLException {
 		BenchPokemon result = null;
 		List<Long> energies = new ArrayList<Long>();
-		ResultSet rs = BenchTDG.findById(id);
+		ResultSet rs = BenchFinder.findById(id);
 		if(rs.next()) {
 			if(rs.getInt("energy") == 1) {
 				energies = findAllEnergies(rs.getLong("pokemon_id"));
@@ -33,7 +33,7 @@ public abstract class BenchPokemonInputMapper {
 	
 	public static List<BenchPokemon> findAllByHandId(long handId) throws SQLException {
 		List<BenchPokemon> result = new ArrayList<BenchPokemon>();
-		ResultSet rs = BenchTDG.findAllByHandId(handId);
+		ResultSet rs = BenchFinder.findAllByHandId(handId);
 		
 		while(rs.next()) {
 			List<Long> energies = new ArrayList<Long>();

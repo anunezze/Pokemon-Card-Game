@@ -31,18 +31,18 @@ public abstract class GameTDG {
 		ps.executeUpdate();
 	}
 	
-	public static ResultSet findAll() throws SQLException {
-		String query = "SELECT * from game;";
-		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
-		return ps.executeQuery();
-	}
-	
-	public static ResultSet find(long id) throws SQLException {
-		String query = "SELECT * from game WHERE id = ?;";
-		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
-		ps.setLong(1, id);
-		return ps.executeQuery();
-	}
+//	public static ResultSet findAll() throws SQLException {
+//		String query = "SELECT * from game;";
+//		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
+//		return ps.executeQuery();
+//	}
+//	
+//	public static ResultSet find(long id) throws SQLException {
+//		String query = "SELECT * from game WHERE id = ?;";
+//		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
+//		ps.setLong(1, id);
+//		return ps.executeQuery();
+//	}
 	
 	public static int update(long id, int version, long currentPlayer, String p1Status, String p2Status) throws SQLException {
 		String query = "UPDATE game SET version=?, current_player=?, p1_status=?, p2_status=? WHERE id=? AND version=?;";

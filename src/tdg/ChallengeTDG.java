@@ -20,14 +20,6 @@ public abstract class ChallengeTDG {
 		ps.executeUpdate();
 	}
 	
-	public static ResultSet find(long id) throws SQLException {		
-		Connection connection = DbRegistry.getConnection();
-		String query = "SELECT * FROM challenge WHERE id =?";
-		PreparedStatement ps = connection.prepareStatement(query);
-		ps.setLong(1, id);
-		return ps.executeQuery();
-	}
-	
 	public static int update(long id, int version, long challengerId, long challengeeId, long challengerDeck, int status) throws SQLException {
 		String query = "UPDATE challenge SET version=?, challenger=?,challengee=?,challenger_deck=?,status=? WHERE id=? AND version=? ";
 		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
@@ -40,11 +32,19 @@ public abstract class ChallengeTDG {
 		ps.setInt(7, version);
 		return ps.executeUpdate();
 	}
-	
-	public static ResultSet findAll() throws SQLException {
-		Connection connection = DbRegistry.getConnection();
-		String query = "SELECT * FROM challenge";
-		PreparedStatement ps = connection.prepareStatement(query);
-		return ps.executeQuery();
-	}
+
+//	public static ResultSet find(long id) throws SQLException {		
+//		Connection connection = DbRegistry.getConnection();
+//		String query = "SELECT * FROM challenge WHERE id =?";
+//		PreparedStatement ps = connection.prepareStatement(query);
+//		ps.setLong(1, id);
+//		return ps.executeQuery();
+//	}
+//	
+//	public static ResultSet findAll() throws SQLException {
+//		Connection connection = DbRegistry.getConnection();
+//		String query = "SELECT * FROM challenge";
+//		PreparedStatement ps = connection.prepareStatement(query);
+//		return ps.executeQuery();
+//	}
 }

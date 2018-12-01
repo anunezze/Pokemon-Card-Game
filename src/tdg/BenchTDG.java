@@ -19,19 +19,19 @@ public class BenchTDG {
 		ps.executeUpdate();
 	}
 	
-	public static ResultSet findById(long id) throws SQLException {
-		String query = "SELECT * FROM bench WHERE id =?;";
-		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
-		ps.setString(1, Long.toString(id));
-		return ps.executeQuery();
-	}
-	
-	public static ResultSet findAllByHandId(long handId) throws SQLException {
-		String query = "SELECT * FROM bench WHERE hand_id =?;";
-		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
-		ps.setString(1, Long.toString(handId));
-		return ps.executeQuery();
-	}
+//	public static ResultSet findById(long id) throws SQLException {
+//		String query = "SELECT * FROM bench WHERE id =?;";
+//		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
+//		ps.setString(1, Long.toString(id));
+//		return ps.executeQuery();
+//	}
+//	
+//	public static ResultSet findAllByHandId(long handId) throws SQLException {
+//		String query = "SELECT * FROM bench WHERE hand_id =?;";
+//		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
+//		ps.setString(1, Long.toString(handId));
+//		return ps.executeQuery();
+//	}
 	
 	public static int update(int version,long handId, boolean energy, long pokemonId, long base) throws SQLException {
 		String query = "UPDATE bench SET version=?, energy =?, pokemon_id=?, base=? WHERE hand_id=? AND version=?";
