@@ -11,7 +11,14 @@ public abstract class DeckOutputMapper {
 	public static void insert(Deck deck) throws SQLException {
 		List<Card> cards = deck.getCards();
 		for(Card c : cards) {
-			DeckTDG.insert(deck.getId(), deck.getVersion(), deck.getOwnerId(), c.getType(), c.getName(), c.getId());
+			DeckTDG.insert(
+					deck.getId(), 
+					deck.getVersion(), 
+					deck.getOwnerId(), 
+					c.getType(), 
+					c.getName(), 
+					c.getId(),
+					c.getBase());
 		}
 	}
 }

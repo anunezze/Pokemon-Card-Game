@@ -91,7 +91,7 @@ public class AppFC extends HttpServlet {
 		else if(url.equals("/Player")) {
 			dispatcher = new ListPlayerDispatcher(request, response);
 		}
-		else if(urlArray.length == 4 && urlArray[1].equals("Player") && urlArray[2].matches("\\d+") && urlArray[3].equals("Challenge")) {
+		else if(urlArray.length == 4 && urlArray[1].equals("Player") && urlArray[2].matches("[+-]?[0-9][0-9]*") && urlArray[3].equals("Challenge")) {
 			dispatcher = new ChallengePlayerDispatcher(request,response);
 			dispatcher.setAttribute("player", Long.parseLong(urlArray[2]));
 		}

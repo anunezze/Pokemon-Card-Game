@@ -55,7 +55,7 @@ public abstract class BenchPokemonInputMapper {
 		List<Long> energies = new ArrayList<Long>();
 		ResultSet rs = PokemonEnergyTDG.findAll(pokemonId);
 		while(rs.next()) {
-			energies.add(rs.getLong("id"));
+			energies.add(rs.getLong("energy_id"));
 		}
 		
 		return energies;

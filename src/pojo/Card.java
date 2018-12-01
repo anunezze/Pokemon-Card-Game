@@ -15,8 +15,13 @@ public class Card{
 		this(id,type,name);
 		this.base = base;
 	}
+	
 	public long getId() {
 		return id;
+	}
+
+	public void setBase(String base) {
+		this.base = base;
 	}
 
 	public char getType() {

@@ -15,7 +15,7 @@ public class ViewDeckCommand implements ICommand {
 	@Override
 	public void processRequest(HttpServletRequest request, HttpServletResponse response)
 			throws SQLException, Exception {
-		long myId = (Long)request.getSession().getAttribute("userid");
+		long myId = (Long)request.getSession(true).getAttribute("userid");
 		List<IDeck> decks = DeckInputMapper.findAllByOwner(myId);
 
 		request.setAttribute("decks", decks);

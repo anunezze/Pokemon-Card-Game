@@ -49,20 +49,57 @@ public class PlayPokemonToBenchCommand implements ICommand {
 		List<BenchPokemon> bench = BenchPokemonInputMapper.findAllByHandId(hand.getId());
 		List<DiscardCard> discardPile = DiscardCardInputMapper.find(game.getId(), myId);
 		List<Card> currentHand = hand.getCurrentHand(deck,bench,discardPile);
-		boolean cardFound = false;
-		for(int i = 0; i< currentHand.size(); i++) {
+		Card card = null;
+		for(int i = 0; i< currentHand.size() && card == null; i++) {
 			if(currentHand.get(i).getId() == cardId) {
-				cardFound = true;
+				card = currentHand.get(i);
 			}
 		}
-		if(!cardFound) {
+		if(card == null) {
 			throw new Exception("You don't have card #" + cardId + " in your hand.");
 		}
+		if(card.getType() == 'p' && card.getBase() == null) {
+			this.playPokemonToBench(hand, cardId, myId);
+		}
+		else if(card.getType() == 'p' && card.getBase() != null) {
+			this.playEvolvePokemon();
+		}
+		else if(card.getType() == 'e') {
+			long pokemonId = Long.parseLong(request.getParameter("pokemon"));
+			this.playEnergy(pokemonId, bench, cardId, hand,request);
+		}
+		else if(card.getType() == 't') {
+			this.playTrainer();
+		}
+		request.setAttribute("message", "User '" + myId + "' played card #" + card.getId() +" of type '" + card.getType() + "'");
+		game.setVersion(version);
+		game.markDirty();
+	}
+	private void playPokemonToBench(Hand hand, long cardId, long myId) {
 		BenchPokemon pokemonBench = BenchPokemonFactory.createNew(hand.getId(), cardId, new ArrayList<Long>());
 		hand.setBenchSize(hand.getBenchSize() + 1);
 		hand.setHandSize(hand.getHandSize() - 1);
-		request.setAttribute("message", "User '" + myId + "' put a pokemon in his bench" + hand.getBenchId());
-		game.setVersion(version);
-		game.markDirty();
+		
+	}
+	private void playTrainer() {
+		
+	}
+	private void playEvolvePokemon() {
+		
+	}
+	private void playEnergy(long pokemonId, List<BenchPokemon> bench, long cardId, Hand hand,HttpServletRequest request) throws Exception {
+		BenchPokemon bp = null;
+		for(int i = 0; i<bench.size() && bp == null; i++) {
+			if(bench.get(i).getPokemonId() == pokemonId) {
+				bp = bench.get(i);
+			}
+		}
+		if(bp == null) {
+			throw new Exception("Pokemon in bench not found");
+		}
+		bp.addEnergy(cardId);
+		request.getServletContext().log(bp.getEnergies().size() + "is my energy size");
+		hand.setBenchSize(hand.getBenchSize() + 1);
+		hand.setHandSize(hand.getHandSize() - 1);
 	}
 }

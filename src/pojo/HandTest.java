@@ -53,10 +53,8 @@ class HandTest {
 				"p \"Charizard\"\n" +
 				"e \"Fire\"\n";
 		Deck deck = new Deck(1,2,3,TEST_DECK1);
-//		for(int i = 0; i < deck.getCards().size(); i++) {
-//			System.out.println(deck.getCards().get(i))
-//		}
-		
+		for(int i = 0; i < deck.getCards().size(); i++) {
+			System.out.println(deck.getCards().get(i).getBase());
+		}
 	}
-
 }

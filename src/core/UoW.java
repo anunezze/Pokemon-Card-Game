@@ -133,6 +133,9 @@ public class UoW {
 			else if(obj.getClass() == Game.class) {
 				GameOutputMapper.update((Game)obj);
 			}
+			else if(obj.getClass() == BenchPokemon.class) {
+				BenchPokemonOutputMapper.update((BenchPokemon)obj);
+			}
 		}
 		
 	}

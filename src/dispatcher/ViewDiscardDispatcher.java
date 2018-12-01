@@ -31,7 +31,7 @@ public class ViewDiscardDispatcher extends Dispatcher {
 			e.printStackTrace();
 			request.setAttribute("message", e.getMessage());
 			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/failure.jsp").forward(request, response);
-		}
+		} 
 	}
 
 }

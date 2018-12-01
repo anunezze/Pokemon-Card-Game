@@ -15,6 +15,7 @@ public class ViewSpecificDeckCommand implements ICommand {
 	@Override
 	public void processRequest(HttpServletRequest request, HttpServletResponse response)
 			throws SQLException, Exception {
+		long myId = (Long)request.getSession(true).getAttribute("userid");
 		long id = (Long)request.getAttribute("deckId");
 		Deck deck = DeckInputMapper.findById(id);
 		if(deck == null) {

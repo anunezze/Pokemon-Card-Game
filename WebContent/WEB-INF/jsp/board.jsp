@@ -1,6 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 {
-	"board":{
+	"game":{
 		"id":${game.id},
 		"version":${game.version},
 		"players":[${game.player1}, ${game.player2}],
@@ -13,7 +13,19 @@
 				"discardsize":${hand1.discardSize},
 				"bench":[
 				<c:forEach var="b1" items="${bench1}">
-					{"id":${b1.pokemonId}}
+					{
+						"id":${b1.pokemonId}
+						<c:if test="${not empty b1.energies}">
+						, "e":[
+							<c:forEach var="energyId" items="${b1.energies}]">
+							${energyId},
+							</c:forEach>
+						]
+						</c:if>
+						<c:if test="${not empty b1.base}">
+						,"b": ${b1.base}
+						</c:if>
+					},
 				</c:forEach>
 				]
 			},
@@ -24,7 +36,9 @@
 				"discardsize":${hand2.discardSize},
 				"bench":[
 				<c:forEach var="b2" items="${bench2}">
-					{"id":${b2.pokemonId}},
+					{
+						"id":${b2.pokemonId}
+					},
 				</c:forEach>
 				]
 			}

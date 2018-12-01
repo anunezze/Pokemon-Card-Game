@@ -19,7 +19,9 @@ public class ChallengePlayerCommand implements ICommand {
 		long challengeeID = (Long)(request.getAttribute("player"));
 		long myId = (Long)request.getSession().getAttribute("userid");
 		long challengerDeckID = Long.parseLong(request.getParameter("deck"));
-		
+		request.getServletContext().log(challengeeID + " challengee id");
+//		request.getServletContext().log(myId);
+//		request.getServletContext().log(arg0);
 		if(myId == challengeeID){
 			throw new Exception("Cannot challenge yourself");
 		}

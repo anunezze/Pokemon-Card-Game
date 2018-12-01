@@ -37,7 +37,7 @@ public abstract class DeckInputMapper {
 				version = rs.getInt("version");
 				ownerId = rs.getInt("owner_id");
 			}
-			cards.add(new Card(rs.getInt("card_id"),rs.getString("card_type").charAt(0), rs.getString("card_name")));
+			cards.add(new Card(rs.getInt("card_id"),rs.getString("card_type").charAt(0), rs.getString("card_name"),rs.getString("base")));
 		}
 		if(!cards.isEmpty()) {
 			result = DeckFactory.createClean(deckId, version, ownerId, cards);

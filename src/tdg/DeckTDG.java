@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import database.DbRegistry;
 
 public abstract class DeckTDG {
-	public static void insert(long id, int version, long ownerId, char cardType, String cardName, long cardId) throws SQLException {
-		String query = "INSERT INTO deck (id, version, owner_id, card_type, card_name, card_id) VALUES (?,?,?,?,?,?);";
+	public static void insert(long id, int version, long ownerId, char cardType, String cardName, long cardId, String base) throws SQLException {
+		String query = "INSERT INTO deck (id, version, owner_id, card_type, card_name, card_id, base) VALUES (?,?,?,?,?,?,?);";
 		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
 		ps.setLong(1, id);
 		ps.setInt(2, version);
@@ -16,6 +16,7 @@ public abstract class DeckTDG {
 		ps.setString(4, String.valueOf(cardType));
 		ps.setString(5, cardName);
 		ps.setLong(6, cardId);
+		ps.setString(7, base);
 		ps.executeUpdate();
 	}
 	

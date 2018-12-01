@@ -36,15 +36,16 @@ public class BenchPokemon extends DomainObject {
 		return energies;
 	}
 
-	public void setEnergies(List<Long> energies) {
-		this.energies = energies;
-	}
-
 	public long getBase() {
 		return base;
 	}
 
 	public void setBase(long base) {
 		this.base = base;
+		this.markDirty();
+	}
+	public void addEnergy(long id) {
+		this.energies.add(id);
+		this.markDirty();
 	}
 }

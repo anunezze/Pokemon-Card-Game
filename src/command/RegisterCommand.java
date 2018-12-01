@@ -29,7 +29,7 @@ public class RegisterCommand {
 		else {
 			User u = UserInputMapper.find(user);
 			if(u != null) {
-				throw new Exception("That user has already registered.");
+				throw new Exception("That user has already registered."); 
 			} 
 			u = UserFactory.createNew(IdGenerator.getInstance().createID(), 1, user, HashUtil.hash(password));
 			long id = u.getId();

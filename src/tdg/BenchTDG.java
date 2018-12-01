@@ -32,4 +32,16 @@ public class BenchTDG {
 		ps.setString(1, Long.toString(handId));
 		return ps.executeQuery();
 	}
+	
+	public static int update(int version,long handId, boolean energy, long pokemonId, long base) throws SQLException {
+		String query = "UPDATE bench SET version=?, energy =?, pokemon_id=?, base=? WHERE hand_id=? AND version=?";
+		PreparedStatement ps = DbRegistry.getConnection().prepareStatement(query);
+		ps.setInt(1, version + 1);
+		ps.setInt(2, energy ? 1 : 0);
+		ps.setLong(3, pokemonId);
+		ps.setLong(4, base);
+		ps.setLong(5, handId);
+		ps.setInt(6, version);
+		return ps.executeUpdate();
+	}
 }

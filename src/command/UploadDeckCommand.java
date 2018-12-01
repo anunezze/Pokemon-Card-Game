@@ -16,8 +16,9 @@ public class UploadDeckCommand implements ICommand {
 			throws SQLException, Exception {
 		long userId = (Long)request.getSession(true).getAttribute("userid");
 		
-		String deckParameter = request.getParameter("deck");
+		String deckParameter = this.uploadDeckForTest(); //request.getParameter("deck");
 		Deck deck = DeckFactory.createNew(IdGenerator.getInstance().createID(),1, userId, deckParameter);
+		request.getServletContext().log(deck.getCards().size() + " is my size");
 		if(deck.getCards().size()>40){
 			throw new Exception("Too many cards in deck of user #" + deck.getOwnerId());
 		}
@@ -28,18 +29,7 @@ public class UploadDeckCommand implements ICommand {
 
 	}
 	private String uploadDeckForTest() {
-		return "e \"Fire\"\n" +
-				"e \"Fire\"\n" +
-				"p \"Charizard\"\n" +
-				"e \"Fire\"\n" +
-				"e \"Fire\"\n" +
-				"e \"Fire\"\n" +
-				"p \"Charizard\"\n" +
-				"p \"Meowth\"\n" +
-				"e \"Fire\"\n" +
-				"t \"Misty\"\n" +
-				"t \"Misty\"\n" +
-				"e \"Fire\"\n" +
+		return 
 				"e \"Fire\"\n" +
 				"e \"Fire\"\n" +
 				"p \"Charizard\"\n" +
@@ -55,6 +45,18 @@ public class UploadDeckCommand implements ICommand {
 				"e \"Fire\"\n" +
 				"e \"Fire\"\n" +
 				"p \"Charizard\"\n" +
+				"e \"Fire\"\n" +
+				"e \"Fire\"\n" +
+				"e \"Fire\"\n" +
+				"p \"Charizard\"\n" +
+				"p \"Meowth\"\n" +
+				"e \"Fire\"\n" +
+				"t \"Misty\"\n" +
+				"t \"Misty\"\n" +
+				"e \"Fire\"\n" +
+				"e \"Fire\"\n" +
+				"e \"Fire\"\n" +
+				"p \"Raichu\" \"Pikachu\"\n" +
 				"e \"Fire\"\n" +
 				"e \"Fire\"\n" +
 				"e \"Fire\"\n" +
