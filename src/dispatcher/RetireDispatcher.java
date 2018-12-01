@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import command.ICommand;
 import core.UoW;
-import database.DbRegistry;
 
 public class RetireDispatcher extends Dispatcher {
 

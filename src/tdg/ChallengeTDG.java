@@ -6,8 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import database.DbRegistry;
-import rdg.ChallengeRDG;
-import util.ChallengeStatus;
 
 public abstract class ChallengeTDG {
 	public static void insert(long id, int version, long challengerId, long challengeeId, long challengerDeck, int status) throws SQLException {
