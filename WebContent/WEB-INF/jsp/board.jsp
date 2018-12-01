@@ -17,7 +17,7 @@
 						"id":${b1.pokemonId}
 						<c:if test="${not empty b1.energies}">
 						, "e":[
-							<c:forEach var="energyId" items="${b1.energies}]">
+							<c:forEach var="energyId" items="${b1.energies}">
 							${energyId},
 							</c:forEach>
 						]

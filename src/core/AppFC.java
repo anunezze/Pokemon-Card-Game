@@ -142,7 +142,7 @@ public class AppFC extends HttpServlet {
 		}
 		else if(urlArray.length == 4 && urlArray[1].equals("Game") && urlArray[2].matches("\\d+") & urlArray[3].equals("EndTurn")) {
 			dispatcher = new EndTurnDispatcher(request,response);
-			dispatcher.setAttribute("game", Long.parseLong(urlArray[2]));
+			dispatcher.setAttribute("game", Long.parseLong(urlArray[2])); 
 		}
 		else if(urlArray.length == 6 &&
 				urlArray[1].equals("Game") && 

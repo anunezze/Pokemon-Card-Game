@@ -13,6 +13,7 @@ import InputMapper.DiscardCardInputMapper;
 import InputMapper.GameInputMapper;
 import InputMapper.HandInputMapper;
 import factory.BenchPokemonFactory;
+import factory.DiscardCardFactory;
 import pojo.BenchPokemon;
 import pojo.Card;
 import pojo.Deck;
@@ -69,7 +70,7 @@ public class PlayPokemonToBenchCommand implements ICommand {
 			this.playEnergy(pokemonId, bench, cardId, hand,request);
 		}
 		else if(card.getType() == 't') {
-			this.playTrainer();
+			this.playTrainer(game.getId(), myId, card.getId(), hand);
 		}
 		request.setAttribute("message", "User '" + myId + "' played card #" + card.getId() +" of type '" + card.getType() + "'");
 		game.setVersion(version);
@@ -81,8 +82,10 @@ public class PlayPokemonToBenchCommand implements ICommand {
 		hand.setHandSize(hand.getHandSize() - 1);
 		
 	}
-	private void playTrainer() {
-		
+	private void playTrainer(long gameId, long playerId, long cardId,Hand hand) {
+		DiscardCardFactory.createNew(gameId, playerId, cardId);
+		hand.setDiscardSize(hand.getDiscardSize()+1);
+		hand.setHandSize(hand.getHandSize() -1);
 	}
 	private void playEvolvePokemon() {
 		

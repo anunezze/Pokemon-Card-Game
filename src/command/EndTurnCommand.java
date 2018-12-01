@@ -1,4 +1,4 @@
-package dispatcher;
+package command;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -11,7 +11,6 @@ import InputMapper.DeckInputMapper;
 import InputMapper.DiscardCardInputMapper;
 import InputMapper.GameInputMapper;
 import InputMapper.HandInputMapper;
-import command.ICommand;
 import factory.DiscardCardFactory;
 import pojo.BenchPokemon;
 import pojo.Card;
@@ -60,10 +59,12 @@ public class EndTurnCommand implements ICommand {
 				}
 			}
 			DiscardCardFactory.createNew(game.getId(), myId, myCurrentHand.get(indexMin).getId());
+			myHand.setDiscardSize(myHand.getDiscardSize()+1);
+			myHand.setHandSize(myHand.getHandSize() -1);
 		}
-		
-		opponentHand.setDeckSize(opponentHand.getDeckSize()-1);
 		opponentHand.setHandSize(opponentHand.getHandSize() + 1);
+		opponentHand.setDeckSize(opponentHand.getDeckSize()-1);
+		
 		request.setAttribute("message", "Player #" + myId + " ended his turn.");
 	}
 }

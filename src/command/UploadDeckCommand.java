@@ -16,7 +16,7 @@ public class UploadDeckCommand implements ICommand {
 			throws SQLException, Exception {
 		long userId = (Long)request.getSession(true).getAttribute("userid");
 		
-		String deckParameter = this.uploadDeckForTest(); //request.getParameter("deck");
+		String deckParameter = request.getParameter("deck");
 		Deck deck = DeckFactory.createNew(IdGenerator.getInstance().createID(),1, userId, deckParameter);
 		request.getServletContext().log(deck.getCards().size() + " is my size");
 		if(deck.getCards().size()>40){
