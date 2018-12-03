@@ -19,7 +19,7 @@ public abstract class DiscardCardInputMapper {
 					rs.getInt("version"), 
 					rs.getLong("game_id"), 
 					rs.getLong("player_id"), 
-					rs.getLong("cardId")));
+					rs.getLong("card_id")));
 		}
 		return result;
 	}

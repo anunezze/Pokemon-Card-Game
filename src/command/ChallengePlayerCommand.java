@@ -1,15 +1,19 @@
 package command;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import InputMapper.ChallengeInputMapper;
 import InputMapper.DeckInputMapper;
 import InputMapper.UserInputMapper;
-import factory.ChallengeFactory; 
+import factory.ChallengeFactory;
+import pojo.Challenge;
 import pojo.IDeck;
 import pojo.User;
+import util.ChallengeStatus;
 
 public class ChallengePlayerCommand implements ICommand {
 
@@ -20,8 +24,13 @@ public class ChallengePlayerCommand implements ICommand {
 		long myId = (Long)request.getSession().getAttribute("userid");
 		long challengerDeckID = Long.parseLong(request.getParameter("deck"));
 		request.getServletContext().log(challengeeID + " challengee id");
-//		request.getServletContext().log(myId);
-//		request.getServletContext().log(arg0);
+		List<Challenge> allChallenges = ChallengeInputMapper.findAll();
+		for(int i =0; i< allChallenges.size(); i++) {
+			if(allChallenges.get(i).getChallenger() == myId && allChallenges.get(i).getChallengee() == challengeeID && allChallenges.get(i).getStatus() == ChallengeStatus.OPEN) {
+				throw new Exception("You already have an open challenge with user #" + challengeeID);
+			}
+
+		}
 		if(myId == challengeeID){
 			throw new Exception("Cannot challenge yourself");
 		}

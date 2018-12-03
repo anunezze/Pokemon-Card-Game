@@ -26,11 +26,14 @@ public class EndTurnCommand implements ICommand {
 			throws SQLException, Exception {
 		long myId = (Long)request.getSession().getAttribute("userid"); 
 		long gameId = (Long)(request.getAttribute("game"));
+		int version = Integer.parseInt(request.getParameter("version"));
 		Hand opponentHand = null;
 		Game game = GameInputMapper.findById(gameId);
 		if(game==null) {
 			throw new Exception("Game was not found"); 
 		}
+		request.getServletContext().log(version + " is my version");
+		game.setVersion(version);
 		if(myId != game.getPlayer1() && myId!= game.getPlayer2()) {
 			throw new Exception("This is not your game");
 		}

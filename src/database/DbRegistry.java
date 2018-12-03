@@ -9,13 +9,13 @@ public abstract class DbRegistry {
 	private static ThreadLocal<Connection> connectionThread = new ThreadLocal<Connection>();
 	
 	public static void newConnection() {
-		String database = "pokemon_db";
-		String user ="root";
-		String password ="a;sldkfj";
+		String database = "a_nunez_zegarra";
+		String user ="a_nunez_zegarra";
+		String password ="luntruda";
 		Connection connection;
 		try {
-//			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+//			Class.forName("com.mysql.jdbc.Driver").newInstance();
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -26,11 +26,11 @@ public abstract class DbRegistry {
 
 		try {
 			
-//			connection = DriverManager.getConnection(
-//					"jdbc:mysql://localhost/" + this.database +
-//					"?user="+ this.user+"&password="+this.password+"&characterEncoding=UTF-8&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + database + "?"
-                    +"user="+user + "&password=" + password);
+			connection = DriverManager.getConnection(
+					"jdbc:mysql://localhost/" + database +
+					"?user="+ user+"&password="+password+"&characterEncoding=UTF-8&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true");
+//            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + database + "?"
+//                    +"user="+user + "&password=" + password);
             
             connectionThread.set(connection);
 

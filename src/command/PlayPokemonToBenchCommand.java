@@ -28,7 +28,7 @@ public class PlayPokemonToBenchCommand implements ICommand {
 	public void processRequest(HttpServletRequest request, HttpServletResponse response)
 			throws SQLException, Exception {
 		long myId =(Long)request.getSession().getAttribute("userid"); 
-		int version = Integer.parseInt(request.getParameter("version"));
+		int version = Integer.parseInt(request.getParameter("version")); 
 		long gameId = (Long)(request.getAttribute("game"));
 		long cardId = (Long)(request.getAttribute("cardId"));
 		Game game = GameInputMapper.findById(gameId);
@@ -65,6 +65,7 @@ public class PlayPokemonToBenchCommand implements ICommand {
 		}
 		else if(card.getType() == 'p' && card.getBase() != null) {
 			long basicId = Long.parseLong(request.getParameter("basic"));
+			request.getServletContext().log(basicId + " is the basic");
 			this.playEvolvePokemon(card,basicId, bench,hand);
 		}
 		else if(card.getType() == 'e') {
@@ -90,13 +91,13 @@ public class PlayPokemonToBenchCommand implements ICommand {
 	}
 	
 	private void playEvolvePokemon(Card cardToPlay, long basicId, List<BenchPokemon> bench, Hand hand) throws Exception {
-		boolean found = false;
+		boolean found = false; 
 		Card basicCard = DeckInputMapper.findCardById(basicId);
 		for(int i = 0; i < bench.size() && !found; i++) {
 			if(bench.get(i).getPokemonId() == basicCard.getId() && cardToPlay.getBase().equals(basicCard.getName())) {
 				found = true;
-				bench.get(i).setBase(bench.get(i).getPokemonId());
-				bench.get(i).setPokemonId(basicId);
+				bench.get(i).setBase(basicId);
+				bench.get(i).setPokemonId(cardToPlay.getId());
 			}
 		}
 		if(!found) {
